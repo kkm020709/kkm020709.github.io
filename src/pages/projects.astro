@@ -1,32 +1,71 @@
 ---
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
-type ProjectCard = {
-	title: string;
-	description: string;
-	tags: string[];
-	icon: string;
-	repoUrl: string;
+type GitHubRepo = {
+	name: string;
+	description: string | null;
+	language: string | null;
+	stargazers_count: number;
+	updated_at: string;
+	html_url: string;
+	topics?: string[];
+	fork: boolean;
 };
 
-const projects: ProjectCard[] = [
-	{
-		title: "KKM Blog · GitHub.io",
-		description:
-			"基于 Astro Firefly 的个人博客项目，包含文章、杂谈、项目与更新历史等页面，并持续迭代优化交互体验。",
-		tags: ["ASTRO", "FIREFLY", "TAILWINDCSS", "GITHUB PAGES"],
-		icon: "🚀",
-		repoUrl: "https://github.com/kkm020709/kkm020709.github.io",
-	},
-	{
-		title: "kkm020709 · Profile",
-		description:
-			"个人 GitHub 主页与代码仓库集合，用于展示学习记录、实验项目和持续更新的开源内容。",
-		tags: ["GITHUB", "OPEN SOURCE", "MARKDOWN"],
-		icon: "✨",
-		repoUrl: "https://github.com/kkm020709",
-	},
-];
+type ProjectCard = {
+	projectName: string;
+	projectIntro: string;
+	projectStack: string[];
+	stars: number;
+	language: string;
+	updatedAt: string;
+	repoUrl: string;
+	searchText: string;
+};
+
+const owner = "kkm020709";
+let projects: ProjectCard[] = [];
+
+try {
+	const response = await fetch(
+		`https://api.github.com/users/${owner}/repos?sort=updated&per_page=100`,
+		{
+			headers: {
+				Accept: "application/vnd.github+json",
+			},
+		},
+	);
+	if (!response.ok) {
+		throw new Error(`GitHub API request failed: ${response.status}`);
+	}
+
+	const repos = (await response.json()) as GitHubRepo[];
+	projects = repos
+		.filter((repo) => !repo.fork)
+		.sort((a, b) => (new Date(a.updated_at) < new Date(b.updated_at) ? 1 : -1))
+		.map((repo) => {
+			const topicStack = (repo.topics || []).slice(0, 4).map((item) => item.toUpperCase());
+			const languageStack = repo.language ? [repo.language.toUpperCase()] : [];
+			const stack = [...new Set([...languageStack, ...topicStack])];
+			const finalStack = stack.length > 0 ? stack : ["UNSPECIFIED"];
+			const updatedAt = new Date(repo.updated_at).toLocaleDateString("zh-CN");
+			const intro = (repo.description || "该仓库暂未填写项目简介。").trim();
+			const searchText = `${repo.name} ${intro} ${finalStack.join(" ")}`.toLowerCase();
+
+			return {
+				projectName: repo.name,
+				projectIntro: intro,
+				projectStack: finalStack,
+				stars: repo.stargazers_count,
+				language: repo.language || "未标注",
+				updatedAt,
+				repoUrl: repo.html_url,
+				searchText,
+			};
+		});
+} catch {
+	projects = [];
+}
 ---
 
 <MainGridLayout title="Projects Matrix" description="开源项目、代码实验与博客工程记录。">
@@ -36,41 +75,105 @@ const projects: ProjectCard[] = [
 			<p class="mt-3 text-sm md:text-base opacity-75">开源项目、科研代码与实验室折腾记录。</p>
 			<div class="search-shell mt-5 max-w-2xl">
 				<span class="search-icon">🔍</span>
-				<span class="search-placeholder">搜索项目名称、描述或技术栈...</span>
+				<input
+					id="projects-search-input"
+					type="text"
+					class="search-input"
+					placeholder="搜索项目名称、描述或技术栈..."
+				/>
 			</div>
 		</header>
 
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-			{
+		<div id="projects-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+			{projects.length > 0 ? (
 				projects.map((project) => (
-					<article class="project-card rounded-3xl p-6">
-						<div class="flex items-start justify-between gap-4">
-							<div class="flex items-center gap-3">
-								<div class="text-3xl leading-none">{project.icon}</div>
-								<h2 class="text-2xl font-bold leading-tight">{project.title}</h2>
+					<a
+						href={project.repoUrl}
+						target="_blank"
+						rel="noreferrer"
+						class="project-card rounded-3xl p-6 block"
+						data-project-card
+						data-search={project.searchText}
+						aria-label={`打开项目 ${project.projectName}`}
+					>
+						<section>
+							<div class="flex items-start justify-between gap-3">
+								<div class="section-title">
+									<div class="section-label">项目名</div>
+									<h2 class="text-2xl font-bold leading-tight">{project.projectName}</h2>
+								</div>
+								<div class="repo-open">前往仓库</div>
 							</div>
-							<a
-								href={project.repoUrl}
-								target="_blank"
-								rel="noreferrer"
-								class="repo-btn"
-								aria-label={`打开 ${project.title} 仓库`}
-							>
-								GitHub
-							</a>
-						</div>
-						<p class="mt-4 text-sm md:text-base opacity-80 leading-relaxed">{project.description}</p>
-						<div class="mt-5 flex flex-wrap gap-2">
-							{project.tags.map((tag) => (
-								<span class="tag-chip">{tag}</span>
-							))}
-						</div>
-					</article>
+
+							<div class="meta-row mt-3 text-sm opacity-75">
+								<span>⭐ {project.stars}</span>
+								<span>语言：{project.language}</span>
+								<span>更新：{project.updatedAt}</span>
+							</div>
+
+							<div class="mt-5">
+								<div class="section-label">项目简介</div>
+								<p class="text-sm md:text-base opacity-85 leading-relaxed">{project.projectIntro}</p>
+							</div>
+
+							<div class="mt-5">
+								<div class="section-label">项目技术栈</div>
+								<div class="mt-2 flex flex-wrap gap-2">
+									{project.projectStack.map((stackItem) => (
+										<span class="tag-chip">{stackItem}</span>
+									))}
+								</div>
+							</div>
+						</section>
+					</a>
 				))
-			}
+			) : (
+				<div class="project-empty rounded-2xl p-6 text-sm opacity-80 lg:col-span-2">
+					暂时无法从 GitHub API 获取仓库信息，请稍后刷新重试。
+				</div>
+			)}
 		</div>
 	</section>
 </MainGridLayout>
+
+<script is:inline>
+	(() => {
+		const input = document.getElementById("projects-search-input");
+		const cards = Array.from(document.querySelectorAll("[data-project-card]"));
+		if (!input || cards.length === 0) return;
+
+		const emptyId = "projects-search-empty";
+		const grid = document.getElementById("projects-grid");
+
+		const render = () => {
+			const keyword = input.value.trim().toLowerCase();
+			let visibleCount = 0;
+
+			for (const card of cards) {
+				const search = card.dataset.search || "";
+				const matched = keyword.length === 0 || search.includes(keyword);
+				card.style.display = matched ? "block" : "none";
+				if (matched) visibleCount += 1;
+			}
+
+			if (!grid) return;
+			const old = document.getElementById(emptyId);
+			if (visibleCount === 0) {
+				if (!old) {
+					const empty = document.createElement("div");
+					empty.id = emptyId;
+					empty.className = "project-empty rounded-2xl p-6 text-sm opacity-80 lg:col-span-2";
+					empty.textContent = "没有匹配的项目，请尝试其他关键词。";
+					grid.appendChild(empty);
+				}
+			} else if (old) {
+				old.remove();
+			}
+		};
+
+		input.addEventListener("input", render);
+	})();
+</script>
 
 <style>
 	.project-matrix-page {
@@ -96,28 +199,49 @@ const projects: ProjectCard[] = [
 		opacity: 0.75;
 	}
 
-	.search-placeholder {
+	.search-input {
+		flex: 1;
+		background: transparent;
+		border: 0;
+		outline: 0;
 		font-size: 0.95rem;
-		opacity: 0.62;
+		color: inherit;
 	}
 
 	.project-card {
 		background: linear-gradient(135deg, rgba(41, 49, 85, 0.92), rgba(32, 37, 66, 0.92));
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		box-shadow: 0 16px 34px rgba(15, 17, 30, 0.32);
+		transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 	}
 
-	.repo-btn {
-		border-radius: 999px;
-		padding: 0.45rem 0.9rem;
+	.project-card:hover {
+		transform: translateY(-3px);
+		border-color: rgba(255, 255, 255, 0.18);
+		box-shadow: 0 20px 42px rgba(13, 15, 28, 0.42);
+	}
+
+	.section-label {
 		font-size: 0.78rem;
-		font-weight: 700;
-		background: rgba(255, 255, 255, 0.11);
-		transition: all 0.2s ease;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		opacity: 0.65;
+		margin-bottom: 0.35rem;
 	}
 
-	.repo-btn:hover {
-		background: rgba(255, 255, 255, 0.2);
+	.repo-open {
+		border-radius: 999px;
+		padding: 0.35rem 0.75rem;
+		font-size: 0.74rem;
+		font-weight: 700;
+		background: rgba(255, 255, 255, 0.12);
+		white-space: nowrap;
+	}
+
+	.meta-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.8rem;
 	}
 
 	.tag-chip {
@@ -127,5 +251,10 @@ const projects: ProjectCard[] = [
 		letter-spacing: 0.03em;
 		background: rgba(99, 102, 241, 0.28);
 		border: 1px solid rgba(129, 140, 248, 0.42);
+	}
+
+	.project-empty {
+		background: rgba(32, 37, 66, 0.86);
+		border: 1px dashed rgba(255, 255, 255, 0.25);
 	}
 </style>

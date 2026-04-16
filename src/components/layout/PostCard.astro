@@ -65,9 +65,9 @@ const { remarkPluginFrontmatter } = await render(entry);
   <div
     class:list={[
       "post-card-content",
-      "pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 md:pb-7 relative flex flex-col h-full box-border",
+      "pl-6 md:pl-9 pr-6 md:pr-6 pt-6 md:pt-7 pb-6 md:pb-7 relative flex flex-col h-full box-border",
       {
-        "w-full md:w-[calc(100%-72px)]": !hasCover,
+        "w-full": !hasCover,
         "w-full md:w-[calc(100%-var(--coverWidth)-1.5rem)]": hasCover,
       },
     ]}
@@ -189,34 +189,9 @@ const { remarkPluginFrontmatter } = await render(entry);
     )
   }
 
-  {
-    !hasCover && (
-      <a
-        href={url}
-        aria-label={title}
-        class:list={[
-          "post-card-enter-btn",
-          "hidden! md:flex! btn-regular w-14 z-20",
-          "absolute right-3 top-3 bottom-3 rounded-xl bg-(--enter-btn-bg)",
-          "hover:bg-(--enter-btn-bg-hover) active:bg-(--enter-btn-bg-active) active:scale-95",
-        ]}
-      >
-        <Icon
-          name="material-symbols:chevron-right-rounded"
-          class="transition text-(--primary) text-4xl mx-auto"
-        />
-      </a>
-    )
-  }
 </div>
 
 <style define:vars={{ coverWidth }}>
-  @media (min-width: 768px) {
-    :global(.no-cover) .post-card-content {
-      padding-right: 5rem !important;
-    }
-  }
-
   /* Grid Mode Styles */
   :global(.grid-mode) .post-card-wrapper {
     flex-direction: column-reverse !important;
@@ -229,10 +204,6 @@ const { remarkPluginFrontmatter } = await render(entry);
     padding-right: 1rem !important;
     height: auto !important;
     flex-grow: 1 !important;
-  }
-
-  :global(.grid-mode) .no-cover .post-card-content {
-    padding-right: 4.5rem !important;
   }
 
   :global(.grid-mode) .post-card-image {
