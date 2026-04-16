@@ -1,50 +1,77 @@
 import {
+	LinkPreset,
 	type NavBarConfig,
 	type NavBarLink,
 	type NavBarSearchConfig,
 	NavBarSearchMethod,
 } from "../types/config";
+import { siteConfig } from "./siteConfig";
 
 // 根据页面开关动态生成导航栏配置
 const getDynamicNavBarConfig = (): NavBarConfig => {
-	// 按目标站点顺序配置导航栏
-	const links: NavBarLink[] = [
-		{
-			name: "首页",
-			url: "/",
-			icon: "material-symbols:home",
-		},
-		{
-			name: "项目",
-			url: "/projects/",
-			icon: "material-symbols:deployed-code",
-		},
-		{
-			name: "归档",
-			url: "/archive/",
-			icon: "material-symbols:archive",
-		},
-		{
-			name: "照片墙",
-			url: "/photowall/",
-			icon: "material-symbols:photo-library",
-		},
-		{
-			name: "杂谈",
-			url: "/chatter/",
-			icon: "material-symbols:chat-outline",
-		},
-		{
-			name: "友链",
-			url: "/friends/",
-			icon: "material-symbols:group",
-		},
-		{
-			name: "关于",
-			url: "/about/",
-			icon: "material-symbols:person",
-		},
+	// 基础导航栏链接
+	const links: (NavBarLink | LinkPreset)[] = [
+		// 主页
+		LinkPreset.Home,
+
+		// 归档
+		LinkPreset.Archive,
 	];
+
+	// 自定义导航栏链接,并且支持多级菜单
+	links.push({
+		name: "链接",
+		url: "/links/",
+		icon: "material-symbols:link",
+
+		// 子菜单
+		children: [
+			{
+				name: "GitHub",
+				url: "https://github.com/kkm020709/kkm020709.github.io",
+				external: true,
+				icon: "fa7-brands:github",
+			},
+			{
+				name: "Bilibili",
+				url: "https://space.bilibili.com/38932988",
+				external: true,
+				icon: "fa7-brands:bilibili",
+			},
+		],
+	});
+
+	// 音乐页
+	links.push({
+		name: "音乐",
+		url: "/music/",
+		icon: "material-symbols:music-note",
+	});
+
+	// 友链
+	links.push(LinkPreset.Friends);
+
+	// 根据配置决定是否添加留言板，在siteConfig关闭pages.guestbook时导航栏不显示留言板
+	if (siteConfig.pages.guestbook) {
+		links.push(LinkPreset.Guestbook);
+	}
+
+	// 关于及其子菜单
+	links.push({
+		name: "关于",
+		url: "/content/",
+		icon: "material-symbols:info",
+		children: [
+			// 根据配置决定是否添加赞助，在siteConfig关闭pages.sponsor时导航栏不显示赞助
+			...(siteConfig.pages.sponsor ? [LinkPreset.Sponsor] : []),
+
+			// 关于页面
+			LinkPreset.About,
+
+			// 根据配置决定是否添加番组计划，在siteConfig关闭pages.bangumi时导航栏不显示番组计划
+			...(siteConfig.pages.bangumi ? [LinkPreset.Bangumi] : []),
+		],
+	});
 
 	// 仅返回链接，其它导航搜索相关配置在模块顶层常量中独立导出
 	return { links } as NavBarConfig;
