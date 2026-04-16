@@ -14,8 +14,12 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		// 主页
 		LinkPreset.Home,
 
-		// 归档
-		LinkPreset.Archive,
+		// 文章
+		{
+			name: "文章",
+			url: "/archive/",
+			icon: "material-symbols:article",
+		},
 	];
 
 	// 自定义导航栏链接,并且支持多级菜单
