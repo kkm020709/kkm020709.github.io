@@ -5,10 +5,10 @@ export const profileConfig: ProfileConfig = {
 	avatar: "/assets/images/avatar.webp",
 
 	// 名字
-	name: "kkm020709",
+	name: "亢凯民",
 
 	// 个人签名
-	bio: "你好，我是 kkm020709。",
+	bio: "你好，这是一个不一样的博客。",
 
 	// 链接配置
 	// 已经预装的图标集：fa7-brands，fa7-regular，fa7-solid，material-symbols，simple-icons

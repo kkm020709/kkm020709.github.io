@@ -1,23 +1,131 @@
 ---
-import { getEntry, render } from "astro:content";
-import Markdown from "@components/common/Markdown.astro";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
-const projectsPost = await getEntry("spec", "projects");
+type ProjectCard = {
+	title: string;
+	description: string;
+	tags: string[];
+	icon: string;
+	repoUrl: string;
+};
 
-if (!projectsPost) {
-	throw new Error("Projects page content not found");
-}
-
-const { Content } = await render(projectsPost);
+const projects: ProjectCard[] = [
+	{
+		title: "KKM Blog · GitHub.io",
+		description:
+			"基于 Astro Firefly 的个人博客项目，包含文章、杂谈、项目与更新历史等页面，并持续迭代优化交互体验。",
+		tags: ["ASTRO", "FIREFLY", "TAILWINDCSS", "GITHUB PAGES"],
+		icon: "🚀",
+		repoUrl: "https://github.com/kkm020709/kkm020709.github.io",
+	},
+	{
+		title: "kkm020709 · Profile",
+		description:
+			"个人 GitHub 主页与代码仓库集合，用于展示学习记录、实验项目和持续更新的开源内容。",
+		tags: ["GITHUB", "OPEN SOURCE", "MARKDOWN"],
+		icon: "✨",
+		repoUrl: "https://github.com/kkm020709",
+	},
+];
 ---
 
-<MainGridLayout title="项目" description="我的 GitHub 项目展示">
-	<div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
-		<div class="card-base z-10 px-9 py-6 relative w-full">
-			<Markdown class="mt-2">
-				<Content />
-			</Markdown>
+<MainGridLayout title="Projects Matrix" description="开源项目、代码实验与博客工程记录。">
+	<section class="project-matrix-page card-base rounded-(--radius-large) p-6 md:p-9">
+		<header class="mb-6 md:mb-8">
+			<h1 class="text-4xl md:text-5xl font-black tracking-wider">PROJECTS MATRIX</h1>
+			<p class="mt-3 text-sm md:text-base opacity-75">开源项目、科研代码与实验室折腾记录。</p>
+			<div class="search-shell mt-5 max-w-2xl">
+				<span class="search-icon">🔍</span>
+				<span class="search-placeholder">搜索项目名称、描述或技术栈...</span>
+			</div>
+		</header>
+
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+			{
+				projects.map((project) => (
+					<article class="project-card rounded-3xl p-6">
+						<div class="flex items-start justify-between gap-4">
+							<div class="flex items-center gap-3">
+								<div class="text-3xl leading-none">{project.icon}</div>
+								<h2 class="text-2xl font-bold leading-tight">{project.title}</h2>
+							</div>
+							<a
+								href={project.repoUrl}
+								target="_blank"
+								rel="noreferrer"
+								class="repo-btn"
+								aria-label={`打开 ${project.title} 仓库`}
+							>
+								GitHub
+							</a>
+						</div>
+						<p class="mt-4 text-sm md:text-base opacity-80 leading-relaxed">{project.description}</p>
+						<div class="mt-5 flex flex-wrap gap-2">
+							{project.tags.map((tag) => (
+								<span class="tag-chip">{tag}</span>
+							))}
+						</div>
+					</article>
+				))
+			}
 		</div>
-	</div>
+	</section>
 </MainGridLayout>
+
+<style>
+	.project-matrix-page {
+		background:
+			radial-gradient(1200px circle at 12% 0%, rgba(236, 72, 153, 0.2), transparent 45%),
+			radial-gradient(900px circle at 88% 100%, rgba(59, 130, 246, 0.2), transparent 48%),
+			rgba(25, 29, 52, 0.75);
+		backdrop-filter: blur(8px);
+	}
+
+	.search-shell {
+		height: 48px;
+		border-radius: 999px;
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0 1rem;
+		background: rgba(34, 40, 67, 0.82);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.search-icon {
+		opacity: 0.75;
+	}
+
+	.search-placeholder {
+		font-size: 0.95rem;
+		opacity: 0.62;
+	}
+
+	.project-card {
+		background: linear-gradient(135deg, rgba(41, 49, 85, 0.92), rgba(32, 37, 66, 0.92));
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 16px 34px rgba(15, 17, 30, 0.32);
+	}
+
+	.repo-btn {
+		border-radius: 999px;
+		padding: 0.45rem 0.9rem;
+		font-size: 0.78rem;
+		font-weight: 700;
+		background: rgba(255, 255, 255, 0.11);
+		transition: all 0.2s ease;
+	}
+
+	.repo-btn:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.tag-chip {
+		border-radius: 999px;
+		font-size: 0.72rem;
+		padding: 0.28rem 0.62rem;
+		letter-spacing: 0.03em;
+		background: rgba(99, 102, 241, 0.28);
+		border: 1px solid rgba(129, 140, 248, 0.42);
+	}
+</style>

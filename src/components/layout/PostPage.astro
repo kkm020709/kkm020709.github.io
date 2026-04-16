@@ -383,6 +383,10 @@ const initialLayoutClass =
     height: 1rem !important;
   }
 
+  #post-list-container.list-mode :global(.post-card-enter-btn) {
+    display: none !important;
+  }
+
   /* 列表模式下，有封面的文章，摘要最多显示两行 */
   #post-list-container.list-mode :global(.has-cover .description) {
     display: -webkit-box !important;
