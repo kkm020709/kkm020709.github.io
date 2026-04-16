@@ -147,6 +147,7 @@ export type ProfileConfig = {
 		url: string;
 		icon: string;
 		showName?: boolean;
+		copyText?: string;
 	}[];
 };
 

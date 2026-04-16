@@ -3,6 +3,9 @@ import { Icon } from "astro-icon/components";
 import ImageWrapper from "@/components/common/ImageWrapper.astro";
 import { profileConfig } from "@/config/profileConfig";
 import { url } from "@/utils/url-utils";
+
+const getCopyOnClick = (text: string) =>
+	`(function(event){event.preventDefault();event.stopPropagation();const anchor=this;const value=${JSON.stringify(text)};const copiedText='已复制';const showCopied=()=>{anchor.dataset.copied='true';anchor.setAttribute('title',copiedText);setTimeout(()=>{anchor.dataset.copied='false';anchor.removeAttribute('title');},1200);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(value).then(showCopied).catch(()=>{showCopied();});}else{showCopied();}return false;}).call(this,event);`;
 ---
 
 <div class="card-base p-3">
@@ -68,6 +71,13 @@ import { url } from "@/utils/url-utils";
                             <Icon name={item.icon} class="text-[1.5rem]"></Icon>
                             {showName && item.name}
                         </a>
+                    } else if (item.copyText) {
+                        return <a rel="me" aria-label={item.name} href="#" data-copied="false" onclick={getCopyOnClick(item.copyText)}
+                                class={`${className} relative`}>
+                            <Icon name={item.icon} class="text-[1.5rem]"></Icon>
+                            {showName && item.name}
+                            <span class="copy-feedback">已复制</span>
+                        </a>
                     } else {
                         return <a rel="me" aria-label={item.name} href={item.url} target="_blank" class={className}>
                             <Icon name={item.icon} class="text-[1.5rem]"></Icon>
@@ -95,6 +105,13 @@ import { url } from "@/utils/url-utils";
                             <Icon name={item.icon} class="text-[1.5rem]"></Icon>
                             {item.name}
                         </a>
+                    } else if (item.copyText) {
+                        return <a rel="me" aria-label={item.name} href="#" data-copied="false" onclick={getCopyOnClick(item.copyText)}
+                                    class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95 relative">
+                                <Icon name={item.icon} class="text-[1.5rem]"></Icon>
+                                {item.name}
+                                <span class="copy-feedback">已复制</span>
+                            </a>
                     } else {
                         return <a rel="me" aria-label={item.name} href={item.url} target="_blank"
                                             class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
@@ -106,3 +123,25 @@ import { url } from "@/utils/url-utils";
         </div>
   </div>
 </div>
+
+<style>
+  .copy-feedback {
+    position: absolute;
+    top: -1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.35rem;
+    background: var(--btn-regular-bg);
+    border: 1px solid var(--line-divider);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+  }
+
+  a[data-copied="true"] .copy-feedback {
+    opacity: 1;
+  }
+</style>

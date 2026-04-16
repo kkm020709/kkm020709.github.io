@@ -1081,6 +1081,18 @@ function disableAnimation() {
     initFloatingPlayer();
   }
 
+  const floatingPlayerViewportKey = "__fireflyFloatingPlayerViewportListener";
+  const floatingPlayerMedia = window.matchMedia("(min-width: 768px)");
+  if (!(window as any)[floatingPlayerViewportKey]) {
+    const onFloatingPlayerViewportChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        requestAnimationFrame(() => initFloatingPlayer());
+      }
+    };
+    floatingPlayerMedia.addEventListener("change", onFloatingPlayerViewportChange);
+    (window as any)[floatingPlayerViewportKey] = true;
+  }
+
   function initFloatingPlayer() {
     if (!window.matchMedia("(min-width: 768px)").matches) return;
 
@@ -1192,7 +1204,14 @@ function disableAnimation() {
     expandBtn.addEventListener("pointerup", stopDrag);
     expandBtn.addEventListener("pointercancel", stopDrag);
 
-    minimizeBtn.addEventListener("click", () => setMinimized(true));
+    minimizeBtn.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+    });
+    minimizeBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setMinimized(true);
+    });
     expandBtn.addEventListener("click", () => {
       if (!dragMoved) {
         setMinimized(false);

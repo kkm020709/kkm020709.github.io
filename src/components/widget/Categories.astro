@@ -4,7 +4,6 @@ import WidgetLayout from "@/components/common/WidgetLayout.astro";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import { getCategoryList } from "@/utils/content-utils";
-import { url } from "@/utils/url-utils";
 
 const categories = await getCategoryList();
 const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
@@ -22,10 +21,7 @@ const style = Astro.props.style;
 <WidgetLayout name={i18n(I18nKey.categories)} id="categories"
                 class={className} style={style}
 >
-    <a slot="title-icon" href={url("/archive/")} class="btn-plain text-xs px-2 py-1 rounded-md">
-        {i18n(I18nKey.more)}
-    </a>
-    <div class="categories-preview overflow-hidden" style={`max-height:${PREVIEW_HEIGHT}`}>
+    <div class="categories-preview overflow-y-auto overflow-x-hidden" style={`max-height:${PREVIEW_HEIGHT}`}>
         {sortedCategories.map((c) =>
             <ButtonLink
                 url={c.url}
