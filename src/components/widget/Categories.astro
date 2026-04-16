@@ -1,26 +1,15 @@
 ---
 import ButtonLink from "@/components/common/ButtonLink.astro";
 import WidgetLayout from "@/components/common/WidgetLayout.astro";
-import { sidebarLayoutConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import { getCategoryList } from "@/utils/content-utils";
+import { url } from "@/utils/url-utils";
 
 const categories = await getCategoryList();
+const sortedCategories = [...categories].sort((a, b) => b.count - a.count);
 
-const COLLAPSED_HEIGHT = "7.5rem";
-
-// 从配置中获取分类组件的折叠阈值
-const categoriesComponent = [
-	...sidebarLayoutConfig.leftComponents,
-	...sidebarLayoutConfig.rightComponents,
-	...sidebarLayoutConfig.mobileBottomComponents,
-].find((c) => c.type === "categories");
-
-const collapseThreshold = categoriesComponent?.responsive?.collapseThreshold;
-const isCollapsed = collapseThreshold
-	? categories.length > collapseThreshold
-	: false;
+const PREVIEW_HEIGHT = "12.5rem";
 
 interface Props {
 	class?: string;
@@ -30,16 +19,21 @@ const className = Astro.props.class;
 const style = Astro.props.style;
 ---
 
-<WidgetLayout name={i18n(I18nKey.categories)} id="categories" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT}
+<WidgetLayout name={i18n(I18nKey.categories)} id="categories"
                 class={className} style={style}
 >
-    {categories.map((c) =>
-        <ButtonLink
-            url={c.url}
-            badge={String(c.count)}
-            label={`View all posts in the ${c.name.trim()} category`}
-        >
-            {c.name.trim()}
-        </ButtonLink>
-    )}
+    <a slot="title-icon" href={url("/archive/")} class="btn-plain text-xs px-2 py-1 rounded-md">
+        {i18n(I18nKey.more)}
+    </a>
+    <div class="categories-preview overflow-hidden" style={`max-height:${PREVIEW_HEIGHT}`}>
+        {sortedCategories.map((c) =>
+            <ButtonLink
+                url={c.url}
+                badge={String(c.count)}
+                label={`View all posts in the ${c.name.trim()} category`}
+            >
+                {c.name.trim()}
+            </ButtonLink>
+        )}
+    </div>
 </WidgetLayout>

@@ -383,6 +383,25 @@ const initialLayoutClass =
     height: 1rem !important;
   }
 
+  #post-list-container.list-mode :global(.no-cover .post-card-content) {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  #post-list-container.list-mode :global(.no-cover .post-card-title) {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  #post-list-container.list-mode :global(.no-cover .description) {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+  }
+
   #post-list-container.list-mode :global(.post-card-enter-btn) {
     display: none !important;
   }
@@ -399,6 +418,24 @@ const initialLayoutClass =
   /* Grid Mode Customization */
   #post-list-container.grid-mode :global(.post-card-wrapper) {
     flex-direction: column-reverse !important;
+  }
+
+  #post-list-container.grid-mode {
+    grid-auto-flow: dense;
+  }
+
+  #post-list-container.grid-mode :global(.post-card-item.no-cover) {
+    min-height: 12rem;
+  }
+
+  #post-list-container.grid-mode :global(.post-card-item.has-cover) {
+    min-height: 18rem;
+  }
+
+  @media (min-width: 1024px) {
+    #post-list-container.grid-mode :global(.post-card-item.has-cover) {
+      grid-column: span 2 / span 2;
+    }
   }
 
   #post-list-container.grid-mode :global(.post-card-image) {

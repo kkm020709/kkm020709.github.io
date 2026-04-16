@@ -434,17 +434,26 @@ const bannerOffset = `${BANNER_HEIGHT_EXTEND / 2}vh`;
 
     <!-- Music Player -->
     <MusicPlayer />
-    <div id="netease-player-floating" class="hidden md:block">
-      <iframe
-        frameborder="no"
-        border="0"
-        marginwidth="0"
-        marginheight="0"
-        loading="lazy"
-        width="330"
-        height="110"
-        src="https://music.163.com/outchain/player?type=0&id=3136952023&auto=1&height=90"
-      ></iframe>
+    <div id="netease-player-floating" class="hidden md:block" data-minimized="false">
+      <div id="netease-player-handle" class="netease-player-drag-handle">
+        <span class="text-xs font-semibold opacity-80">音乐播放器</span>
+        <button id="netease-player-minimize" class="netease-player-control-btn" type="button" aria-label="缩小音乐播放器">
+          <span>－</span>
+        </button>
+      </div>
+      <div class="netease-player-body">
+        <iframe
+          frameborder="no"
+          border="0"
+          marginwidth="0"
+          marginheight="0"
+          loading="lazy"
+          width="330"
+          height="110"
+          src="https://music.163.com/outchain/player?type=0&id=3136952023&auto=1&height=90"
+        ></iframe>
+      </div>
+      <button id="netease-player-expand" type="button" aria-label="展开音乐播放器">🎵</button>
     </div>
 
     <PageEnhanceEffects />
@@ -1061,6 +1070,7 @@ function disableAnimation() {
       initWallpaperMode();
       initThemeListener();
       initIconLoader();
+      initFloatingPlayer();
     });
   } else {
     updateMainGridCols();
@@ -1068,23 +1078,220 @@ function disableAnimation() {
     initWallpaperMode();
     initThemeListener();
     initIconLoader();
+    initFloatingPlayer();
+  }
+
+  function initFloatingPlayer() {
+    if (!window.matchMedia("(min-width: 768px)").matches) return;
+
+    const container = document.getElementById("netease-player-floating");
+    const handle = document.getElementById("netease-player-handle");
+    const minimizeBtn = document.getElementById("netease-player-minimize");
+    const expandBtn = document.getElementById("netease-player-expand");
+    if (!container || !handle || !minimizeBtn || !expandBtn) return;
+    if (container.dataset.initialized === "true") return;
+    container.dataset.initialized = "true";
+
+    const storageKey = "firefly-netease-player-state";
+    let pointerId = -1;
+    let offsetX = 0;
+    let offsetY = 0;
+    let isDragging = false;
+    let activeCaptureElement: HTMLElement | null = null;
+    let dragMoved = false;
+
+    const clamp = (value: number, min: number, max: number) =>
+      Math.min(Math.max(value, min), max);
+
+    const applyPosition = (x: number, y: number) => {
+      const rect = container.getBoundingClientRect();
+      const maxX = Math.max(8, window.innerWidth - rect.width - 8);
+      const maxY = Math.max(8, window.innerHeight - rect.height - 8);
+      const finalX = clamp(x, 8, maxX);
+      const finalY = clamp(y, 8, maxY);
+      container.style.left = `${finalX}px`;
+      container.style.top = `${finalY}px`;
+      return { x: finalX, y: finalY };
+    };
+
+    const saveState = (state: { x: number; y: number; minimized: boolean }) => {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    };
+
+    const setMinimized = (minimized: boolean) => {
+      container.dataset.minimized = minimized ? "true" : "false";
+      const rect = container.getBoundingClientRect();
+      saveState({
+        x: rect.left,
+        y: rect.top,
+        minimized,
+      });
+    };
+
+    const initState = () => {
+      const fallbackX = Math.max(8, window.innerWidth - 350);
+      const fallbackY = Math.max(8, window.innerHeight - 230);
+      let state = { x: fallbackX, y: fallbackY, minimized: false };
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          state = {
+            x: typeof parsed.x === "number" ? parsed.x : fallbackX,
+            y: typeof parsed.y === "number" ? parsed.y : fallbackY,
+            minimized: parsed.minimized === true,
+          };
+        } catch {
+          state = { x: fallbackX, y: fallbackY, minimized: false };
+        }
+      }
+      const placed = applyPosition(state.x, state.y);
+      container.dataset.minimized = state.minimized ? "true" : "false";
+      saveState({ x: placed.x, y: placed.y, minimized: state.minimized });
+    };
+
+    const startDrag = (event: PointerEvent, captureElement: HTMLElement) => {
+      isDragging = true;
+      pointerId = event.pointerId;
+      activeCaptureElement = captureElement;
+      dragMoved = false;
+      const rect = container.getBoundingClientRect();
+      offsetX = event.clientX - rect.left;
+      offsetY = event.clientY - rect.top;
+      container.classList.add("dragging");
+      captureElement.setPointerCapture(pointerId);
+      event.preventDefault();
+    };
+
+    const onMove = (event: PointerEvent) => {
+      if (!isDragging || event.pointerId !== pointerId) return;
+      dragMoved = true;
+      const placed = applyPosition(event.clientX - offsetX, event.clientY - offsetY);
+      saveState({
+        x: placed.x,
+        y: placed.y,
+        minimized: container.dataset.minimized === "true",
+      });
+    };
+
+    const stopDrag = (event: PointerEvent) => {
+      if (!isDragging || event.pointerId !== pointerId) return;
+      isDragging = false;
+      activeCaptureElement?.releasePointerCapture(pointerId);
+      activeCaptureElement = null;
+      container.classList.remove("dragging");
+      pointerId = -1;
+    };
+
+    handle.addEventListener("pointerdown", (event) => startDrag(event, handle));
+    handle.addEventListener("pointermove", onMove);
+    handle.addEventListener("pointerup", stopDrag);
+    handle.addEventListener("pointercancel", stopDrag);
+    expandBtn.addEventListener("pointerdown", (event) => startDrag(event, expandBtn));
+    expandBtn.addEventListener("pointermove", onMove);
+    expandBtn.addEventListener("pointerup", stopDrag);
+    expandBtn.addEventListener("pointercancel", stopDrag);
+
+    minimizeBtn.addEventListener("click", () => setMinimized(true));
+    expandBtn.addEventListener("click", () => {
+      if (!dragMoved) {
+        setMinimized(false);
+      }
+      dragMoved = false;
+    });
+
+    window.addEventListener("resize", () => {
+      const rect = container.getBoundingClientRect();
+      const placed = applyPosition(rect.left, rect.top);
+      saveState({
+        x: placed.x,
+        y: placed.y,
+        minimized: container.dataset.minimized === "true",
+      });
+    });
+
+    initState();
   }
 </script>
 
 <style is:global>
   #netease-player-floating {
     position: fixed;
-    right: 0.9rem;
-    bottom: 5.5rem;
+    left: 0.9rem;
+    top: 5.5rem;
     z-index: 9998;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(4px);
+    touch-action: none;
   }
 
   #netease-player-floating iframe {
     display: block;
+  }
+
+  #netease-player-floating.dragging {
+    transition: none !important;
+  }
+
+  #netease-player-floating .netease-player-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    height: 30px;
+    padding: 0 0.5rem;
+    background: color-mix(in oklch, var(--card-bg) 82%, var(--primary) 18%);
+    border-bottom: 1px solid var(--line-divider);
+    cursor: grab;
+  }
+
+  #netease-player-floating.dragging .netease-player-drag-handle {
+    cursor: grabbing;
+  }
+
+  #netease-player-floating .netease-player-control-btn {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    border: none;
+    background: var(--btn-regular-bg);
+    color: inherit;
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  #netease-player-floating .netease-player-body {
+    display: block;
+  }
+
+  #netease-player-expand {
+    display: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    border: none;
+    background: var(--btn-regular-bg);
+    font-size: 1.25rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #netease-player-floating[data-minimized="true"] {
+    border-radius: 999px;
+    padding: 0.2rem;
+  }
+
+  #netease-player-floating[data-minimized="true"] .netease-player-drag-handle,
+  #netease-player-floating[data-minimized="true"] .netease-player-body {
+    display: none;
+  }
+
+  #netease-player-floating[data-minimized="true"] #netease-player-expand {
+    display: inline-flex;
   }
 </style>

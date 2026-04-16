@@ -5,7 +5,7 @@ description: 介绍如何通过 Frontmatter 的 visible 标签控制文章是否
 tags: [教程, 博客, 可视控制]
 category: 博客指南
 draft: false
-visible: false
+visible: true
 ---
 
 这篇文档用于说明如何使用文章的 `visible` 标签控制展示状态。
