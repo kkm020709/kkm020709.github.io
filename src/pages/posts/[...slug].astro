@@ -92,16 +92,6 @@ const jsonLd = {
 		: siteConfig.lang.replace("_", "-"),
 	// TODO include cover image here
 };
-
-const encodedPostUrl = encodeURIComponent(Astro.url.href);
-const encodedPostTitle = encodeURIComponent(entry.data.title);
-const encodedPostDesc = encodeURIComponent(
-	entry.data.description || entry.data.title,
-);
-const weiboShareUrl = `https://service.weibo.com/share/share.php?title=${encodedPostTitle}&url=${encodedPostUrl}`;
-const qzoneShareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${encodedPostUrl}&title=${encodedPostTitle}&summary=${encodedPostDesc}`;
-const qqShareUrl = `https://connect.qq.com/widget/shareqq/index.html?url=${encodedPostUrl}&title=${encodedPostTitle}&summary=${encodedPostDesc}`;
-const baiduShareUrl = `https://tieba.baidu.com/f/commit/share/openShareApi?url=${encodedPostUrl}&title=${encodedPostTitle}`;
 ---
 
 <MainGridLayout
@@ -255,48 +245,6 @@ const baiduShareUrl = `https://tieba.baidu.com/f/commit/share/openShareApi?url=$
                   </div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <button
-                    id="one-click-share-btn"
-                    type="button"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium btn-regular"
-                    data-share-title={entry.data.title}
-                    data-share-url={Astro.url.href}
-                  >
-                    <Icon name="material-symbols:share" class="text-sm" />
-                    <span id="one-click-share-label">一键分享</span>
-                  </button>
-                  <a
-                    href={weiboShareUrl}
-                    target="_blank"
-                    rel="noopener"
-                    class="inline-flex items-center gap-1 px-3 py-2 rounded-lg btn-regular text-sm"
-                  >
-                    微博
-                  </a>
-                  <a
-                    href={qzoneShareUrl}
-                    target="_blank"
-                    rel="noopener"
-                    class="inline-flex items-center gap-1 px-3 py-2 rounded-lg btn-regular text-sm"
-                  >
-                    QQ 空间
-                  </a>
-                  <a
-                    href={qqShareUrl}
-                    target="_blank"
-                    rel="noopener"
-                    class="inline-flex items-center gap-1 px-3 py-2 rounded-lg btn-regular text-sm"
-                  >
-                    QQ
-                  </a>
-                  <a
-                    href={baiduShareUrl}
-                    target="_blank"
-                    rel="noopener"
-                    class="inline-flex items-center gap-1 px-3 py-2 rounded-lg btn-regular text-sm"
-                  >
-                    百度
-                  </a>
                   {
                     siteConfig.sharePoster && (
                       <SharePoster
@@ -447,33 +395,3 @@ const baiduShareUrl = `https://tieba.baidu.com/f/commit/share/openShareApi?url=$
   <!-- 评论 -->
   {entry.data.comment && <Comment post={entry} />}
 </MainGridLayout>
-
-<script is:inline>
-	(function () {
-		const btn = document.getElementById("one-click-share-btn");
-		if (!btn) return;
-
-		const title = btn.getAttribute("data-share-title") || document.title;
-		const shareUrl = btn.getAttribute("data-share-url") || window.location.href;
-		const label = document.getElementById("one-click-share-label");
-
-		btn.addEventListener("click", async () => {
-			if (navigator.share) {
-				try {
-					await navigator.share({ title, url: shareUrl });
-					return;
-				} catch (_) {}
-			}
-
-			try {
-				await navigator.clipboard.writeText(shareUrl);
-				if (label) label.textContent = "链接已复制";
-				setTimeout(() => {
-					if (label) label.textContent = "一键分享";
-				}, 1400);
-			} catch (_) {
-				window.open(shareUrl, "_blank");
-			}
-		});
-	})();
-</script>

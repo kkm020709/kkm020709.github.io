@@ -2,9 +2,6 @@
 	(function () {
 		if (typeof window === "undefined") return;
 
-		const originalTitle = document.title;
-		const hiddenTitle = "页面崩溃";
-
 		const floatingTexts = [
 			"点赞+1",
 			"真不错",
@@ -41,32 +38,11 @@
 			setTimeout(() => effect.remove(), 720);
 		}
 
-		function onVisibilityChange() {
-			document.title = document.hidden ? hiddenTitle : originalTitle;
-		}
-
 		function onClick(event) {
 			if (!(event.target instanceof HTMLElement)) return;
 			createFloatingEffect(event.clientX, event.clientY);
 		}
 
-		function optimizeImages() {
-			const images = document.querySelectorAll("img");
-			images.forEach((img) => {
-				if (img.closest("#netease-player-floating")) return;
-				if (!img.hasAttribute("loading")) img.setAttribute("loading", "lazy");
-				img.setAttribute("decoding", "async");
-				if (!img.hasAttribute("fetchpriority")) img.setAttribute("fetchpriority", "low");
-			});
-		}
-
-		document.addEventListener("visibilitychange", onVisibilityChange);
 		document.addEventListener("click", onClick, { passive: true });
-		document.addEventListener("astro:page-load", optimizeImages);
-		if (document.readyState === "loading") {
-			document.addEventListener("DOMContentLoaded", optimizeImages);
-		} else {
-			optimizeImages();
-		}
 	})();
 </script>
