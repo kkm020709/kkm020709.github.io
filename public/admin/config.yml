@@ -2,9 +2,9 @@ backend:
   name: git-gateway
   branch: main
 
-site_url: https://kkm020709-github-io.netlify.app
-display_url: https://kkm020709-github-io.netlify.app
-logo_url: /images/favicon.png
+site_url: https://kangxia.top
+display_url: https://kangxia.top
+logo_url: /assets/images/favicon.ico
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
@@ -21,12 +21,18 @@ collections:
     format: "frontmatter"
     fields:
       - { label: "Title", name: "title", widget: "string" }
-      - { label: "Meta Title", name: "meta_title", widget: "string", required: false }
       - { label: "Description", name: "description", widget: "text" }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Publish Date", name: "published", widget: "datetime" }
+      - { label: "Update Date", name: "updated", widget: "datetime", required: false }
       - { label: "Cover Image", name: "image", widget: "image", required: false }
-      - { label: "Categories", name: "categories", widget: "list", default: ["others"] }
-      - { label: "Authors", name: "authors", widget: "list", default: ["Admin"] }
-      - { label: "Tags", name: "tags", widget: "list", default: ["others"] }
+      - { label: "Category", name: "category", widget: "string", required: false }
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "Language", name: "lang", widget: "string", required: false, hint: "例如 zh_CN / en" }
+      - { label: "Pinned", name: "pinned", widget: "boolean", required: false, default: false }
+      - { label: "Author", name: "author", widget: "string", required: false }
+      - { label: "Source Link", name: "sourceLink", widget: "string", required: false }
+      - { label: "License Name", name: "licenseName", widget: "string", required: false }
+      - { label: "License URL", name: "licenseUrl", widget: "string", required: false }
+      - { label: "Enable Comment", name: "comment", widget: "boolean", required: false, default: true }
       - { label: "Draft", name: "draft", widget: "boolean", required: false, default: false }
       - { label: "Body", name: "body", widget: "markdown" }

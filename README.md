@@ -1,116 +1,298 @@
-<h1 align=center>Bookworm Light Astro</h1>
-<p align=center>Bookworm Light is a feature-rich, minimal, highly customizable, easy-to-use free Astro blog theme.</p>
-<h2 align="center"> <a target="_blank" href="https://bookworm-light-astro.vercel.app/" rel="nofollow">👀Demo</a> | <a  target="_blank" href="https://pagespeed.web.dev/report?url=https%3A%2F%2Fbookworm-light-astro.vercel.app%2F&form_factor=desktop">Page Speed (100%)🚀</a>
-</h2>
 
-<p align=center>
-  <a href="https://github.com/withastro/astro/releases/tag/astro%406.0.0-beta.17" alt="Contributors">
-    <img src="https://img.shields.io/static/v1?label=ASTRO&message=6.0%20beta&color=000&logo=astro" />
-  </a>
+<img src="./docs/images/1131.png" width = "350" height = "500" alt="Firefly" align=right />
 
-  <a href="https://github.com/themefisher/bookworm-light-astro/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/themefisher/bookworm-light-astro" alt="license"></a>
+<div align="center">
 
-  <img src="https://img.shields.io/github/languages/code-size/themefisher/bookworm-light-astro" alt="code size">
+# Firefly
+> A Fresh and Beautiful Astro Static Blog Theme Template
+> 
+> ![Node.js >= 22](https://img.shields.io/badge/node.js-%3E%3D22-brightgreen) 
+![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
+![Astro](https://img.shields.io/badge/Astro-5.16.15-orange)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
+>
+> [![Stars](https://img.shields.io/github/stars/CuteLeaf/Firefly?style=social)](https://github.com/CuteLeaf/Firefly/stargazers)
+[![Forks](https://img.shields.io/github/forks/CuteLeaf/Firefly?style=social)](https://github.com/CuteLeaf/Firefly/network/members)
+[![Issues](https://img.shields.io/github/issues/CuteLeaf/Firefly)](https://github.com/CuteLeaf/Firefly/issues)
+> 
+> [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z41NQALY)
+> 
+> ![GitHub License](https://img.shields.io/github/license/CuteLeaf/Firefly)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/CuteLeaf/Firefly)
+[![Afdian Sponsor](https://img.shields.io/badge/Afdian-Sponsor%20Author-ff69b4.svg)](https://afdian.com/a/cuteleaf)
+</div>
 
-  <a href="https://github.com/themefisher/bookworm-light-astro/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/themefisher/bigspring-light-astro" alt="contributors"></a>
-</p>
 
-![bookworm-light](https://assets.teamosis.com/thumbs/bookworm-light.png)
+---
+📖 README:
+**[简体中文](README.zh.md)** | **[繁體中文](docs/README.zh-TW.md)** | **[English](README.md)** | **[日本語](docs/README.ja.md)** | **[Русский](docs/README.ru.md)** 
 
-Bookworm Light is a minimal multi-author free Astro blog theme which is perfect for any kind of blog website. Whether you're interested in food, beauty, travel, photography, lifestyle, fitness, health, or other topics, this theme is a great fit. The theme is super fast and SEO friendly which makes it easier for your content to be discovered by search engines.
+🚀 Quick Guide:
+[**🖥️Live Demo**](https://firefly.cuteleaf.cn/) /
+[**📝Documentation**](https://docs-firefly.cuteleaf.cn/) /
+[**🍀My Blog**](https://blog.cuteleaf.cn)
 
-## 🔑Key Features
+⚡ Static Site Generation: Ultra-fast loading speed and SEO optimization based on Astro
 
-- 🎨 Highly Customizable (Color, Font, Menu, Social Links, SEO Meta Tags, etc.)
-- 👥 Multi-Author Support
-- 📚 Authors Page
-- 👤 Author Single Page
-- 🔍 Search Functionality with FuseJS
-- 🏷️ Tags and Categories Support
-- 📲 Post Social Share Option
-- 🔗 Similar Post Suggestions
-- ⚡ Fast by Default (95+ Google PageSpeed Score)
-- ⚙️ Netlify Settings Pre-configured
-- 📬 Contact Form Support
-- 🌅 Support OG Image
-- ✍️ Write and Update Content in Markdown / MDX
-- 📚 MDX Components Auto Import
-- 📝 Includes Draft Pages and Posts
-- 🚀 Built with Tailwind CSS Framework
-- 📱 Fully Responsive on Desktops, Tablets, and Smartphones
-- 🔍 SEO Friendly
+🎨 Modern Design: Clean and beautiful interface with customizable theme colors
 
-<!-- installation -->
+📱 Mobile-Friendly: Perfect responsive experience with mobile-specific optimizations
 
-## 🔧Installation
+🔧 Highly Configurable: Most features can be customized through configuration files
 
-After downloading the template, you have some prerequisites to install. Then you can run it on your localhost. You can view the package.json file to see which scripts are included.
+<img alt="firefly" src="./docs/images/1.webp" />
 
-### ⚙️Install prerequisites (once for a machine)
+>[!TIP]
+>Firefly is a fresh and beautiful personal blog theme template based on the Astro framework and the Fuwari template, designed for tech enthusiasts and content creators. This theme integrates modern web technology stacks, provides rich functional modules and highly customizable interfaces, allowing you to easily create a professional and beautiful personal blog website.
+>
+>In important layouts, Firefly innovatively adds dual sidebars, article grid (multi-column) layout, masonry layout, includes site statistics, calendar component, table of contents and other widgets to enrich the sidebar, while also retaining the original fuwari layout, which can be freely switched in the configuration file according to your preferences.
+>
+>**For more layout configurations and demos, please see: [Firefly Layout System Details](https://firefly.cuteleaf.cn/posts/firefly-layout-system/)**
+>
+>Firefly supports i18n multi-language switching, but except for Simplified Chinese, other languages are AI-translated. If there are any errors, welcome to submit [Pull Request](https://github.com/CuteLeaf/Firefly/pulls) for correction.
 
-- **Node Installation:** [Install node js](https://nodejs.org/en/download/) [Recommended LTS version]
+## ✨ Features
 
-### 🖥️Local setup
+### Core Features
 
-After successfully installing those dependencies, open this template with any IDE [[VS Code](https://code.visualstudio.com/) recommended], and then open the internal terminal of IDM [vs code shortcut <code>ctrl/cmd+\`</code>]
+- [x] **Astro + Tailwind CSS** - Ultra-fast static site generation based on modern tech stack
+- [x] **Smooth Animations** - Swup page transition animations for silky smooth browsing experience
+- [x] **Responsive Design** - Perfect adaptation for desktop, tablet and mobile devices
+- [x] **Multi-language Support** - i18n internationalization, supports Simplified Chinese, Traditional Chinese, English, Japanese, Russian
+- [x] **Full-text Search** - Client-side search based on Pagefind, supports article content indexing.
 
-- Install dependencies
+### Personalization
+- [x] **Dynamic Sidebar** - Supports single sidebar, dual sidebar configuration
+- [x] **Article Layout** - Supports list (single column) and grid (multi-column/masonry) layout
+- [x] **Font Management** - Custom font support with rich font selector
+- [x] **Footer Configuration** - HTML content injection, fully customizable
+- [x] **Light/Dark Mode** - Supports light/dark/system three modes
+- [x] **Navbar Customization** - Logo, title, links fully customizable
+- [x] **Wallpaper Mode Switching** - Banner wallpaper, fullscreen wallpaper, solid background
+- [x] **Theme Color Customization** - 360° hue adjustment
+
+### Page Components
+- [x] **Guestbook** - Supports guestbook page
+- [x] **Announcement Bar** - Supports sidebar announcement notification
+- [x] **Mascot** - Supports both Spine and Live2D animation engines
+- [x] **Site Statistics** - Displays article, category, tag counts, total word count, etc.
+- [x] **Site Calendar** - Displays current month calendar and published articles for the month
+- [x] **Sponsor Page** - Sponsor link redirection, payment QR codes display, sponsor list, in-article sponsor button
+- [x] **Share Poster** - Supports generating beautiful article share posters
+- [x] **Sakura Effect** - Supports sakura effect, fullscreen sakura animation
+- [x] **Friend Links** - Beautiful friend links display page
+- [x] **Ad Component** - Supports custom sidebar advertising content
+- [x] **Bangumi** - Display anime and game tracking based on Bangumi API
+- [x] **Comment System** - Integrates Twikoo, Waline, Giscus, Disqus, Artalk comment systems
+- [x] **Visit Counter** - Supports calling Waline, Twikoo built-in visit tracking
+- [x] **Music Player** - Based on APlayer, supports local music and Meting API online music
+
+### Content Enhancement
+- [x] **Image Lightbox** - Fancybox image preview functionality
+- [x] **Floating TOC** - Dynamically displays article table of contents, supports anchor jumping, shown when sidebar TOC is hidden
+- [x] **Email Protection** - Prevent automated crawlers from directly scraping email addresses to avoid spam
+- [x] **Sidebar TOC** - Dynamically displays article table of contents, supports anchor jumping
+- [x] **Enhanced Code Blocks** - Based on Expressive Code, supports code folding, line numbers, language identification
+- [x] **Math Formula Support** - KaTeX rendering engine, supports inline and block formulas
+- [x] **Random Cover Images** - Supports fetching random cover images via API
+- [x] **Markdown Extensions** - More Markdown extension syntax support
+
+### SEO
+- [x] **SEO Optimization** - Complete meta tags and structured data
+- [x] **RSS Feed** - Automatically generates RSS Feed
+- [x] **Sitemap** - Automatically generates XML Sitemap with page filtering configuration
+- [x] **Analytics** - Integrates Google Analytics, Microsoft Clarity
+
+If you have useful features and optimizations, please submit a [Pull Request](https://github.com/CuteLeaf/Firefly/pulls)
+
+## 🚀 Quick Start
+
+### Requirements
+
+- Node.js ≤ 22
+- pnpm ≤ 9
+
+### Local Development
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Cuteleaf/Firefly.git
+   cd Firefly
+   ```
+   
+   **First [Fork](https://github.com/CuteLeaf/Firefly/fork) to your own repository then clone (recommended). Don't forget to Star before Fork!**
+
+   ```bash
+   git clone https://github.com/you-github-name/Firefly.git
+   cd Firefly
+   ```
+3. **Install dependencies:**
+   ```bash
+   # Install pnpm if not installed
+   npm install -g pnpm
+   
+   # Install project dependencies
+   pnpm install
+   ```
+
+4. **Configure blog:**
+   - Edit configuration files in `src/config/` directory to customize blog settings
+
+5. **Start development server:**
+   ```bash
+   pnpm dev
+   ```
+   Blog will be available at `http://localhost:4321`
+
+### Platform Hosting Deployment
+- **Refer to the [official guide](https://docs.astro.build/en/guides/deploy/) to deploy your blog to Vercel, Netlify, GitHub Pages, Cloudflare Pages, EdgeOne Pages, etc.**
+
+   Framework Preset: `Astro`
+
+   Root Directory: `./`
+
+   Output Directory: `dist`
+
+   Build Command: `pnpm run build`
+
+   Install Command: `pnpm install`
+
+## 📖 Configuration
+
+> 📚 **Detailed Configuration Documentation**: Check [Firefly Documentation](https://docs-firefly.cuteleaf.cn/) for complete configuration guide
+
+### Setting Website Language
+
+To set the default language for your blog, edit the `src/config/siteConfig.ts` file:
+
+```typescript
+// Define site language
+const SITE_LANG = "zh_CN";
+```
+
+**Supported language codes:**
+- `zh_CN` - Simplified Chinese
+- `zh_TW` - Traditional Chinese
+- `en` - English
+- `ja` - Japanese
+- `ru` - Russian
+
+### Configuration File Structure
 
 ```
-npm install
+src/
+├── config/
+│   ├── index.ts              # Configuration index file
+│   ├── siteConfig.ts         # Site basic configuration
+│   ├── backgroundWallpaper.ts # Background wallpaper configuration
+│   ├── profileConfig.ts      # User profile configuration
+│   ├── commentConfig.ts      # Comment system configuration
+│   ├── announcementConfig.ts # Announcement configuration
+│   ├── licenseConfig.ts      # License configuration
+│   ├── footerConfig.ts       # Footer configuration
+│   ├── FooterConfig.html     # Footer HTML content
+│   ├── expressiveCodeConfig.ts # Code highlighting configuration
+│   ├── sakuraConfig.ts       # Sakura effect configuration
+│   ├── fontConfig.ts         # Font configuration
+│   ├── sidebarConfig.ts      # Sidebar layout configuration
+│   ├── navBarConfig.ts       # Navbar configuration
+│   ├── musicConfig.ts        # Music player configuration
+│   ├── pioConfig.ts          # Mascot configuration
+│   ├── adConfig.ts           # Ad configuration
+│   ├── friendsConfig.ts      # Friend links configuration
+│   ├── sponsorConfig.ts      # Sponsor configuration
+│   └── coverImageConfig.ts   # Article cover image configuration
 ```
 
-- Run locally
 
+## ⚙️ Article Frontmatter
+
+```yaml
+---
+title: My First Blog Post
+published: 2023-09-09
+description: This is the first post of my new Astro blog.
+image: ./cover.jpg  # Or use "api" to enable random cover images
+tags: [Foo, Bar]
+category: Front-end
+draft: false
+lang: zh-CN      # Only set when article language differs from site language in `siteConfig.ts`
+pinned: false    # Pin article
+comment: true    # Enable comments
+---
 ```
-npm run dev
-```
 
-After that, it will open up a preview of the template in your default browser, watch for changes to source files, and live-reload the browser when changes are saved.
+## 📖 Markdown Extensions
 
-## 🔨Production Build
+In addition to the default [GitHub Flavored Markdown](https://github.github.com/gfm/) support in Astro, there are some additional Markdown features:
 
-After finishing all the customization, you can create a production build by running this command.
+- Admonitions - Supports configuration for GitHub, Obsidian, and VitePress themes ([Preview and Usage](https://firefly.cuteleaf.cn/posts/markdown-extended/))
+- GitHub Repository Cards ([Preview and Usage](https://firefly.cuteleaf.cn/posts/markdown-extended/))
+- Enhanced Code Blocks based on Expressive Code ([Preview](http://firefly.cuteleaf.cn/posts/code-examples/) / [Documentation](https://expressive-code.com/))
 
-```
-npm run build
-```
+## 🧞 Commands
 
-<!-- edit with sitepins -->
+All commands need to be executed in the project root directory:
 
-## 📝 Edit Content with CMS
+| Command                    | Action                                              |
+|:---------------------------|:----------------------------------------------------|
+| `pnpm install`             | Install dependencies                                |
+| `pnpm dev`                 | Start local development server at `localhost:4321`  |
+| `pnpm build`               | Build site to `./dist/`                             |
+| `pnpm preview`             | Preview built site locally                          |
+| `pnpm check`               | Check for errors in code                            |
+| `pnpm format`              | Format your code using Biome                        |
+| `pnpm new-post <filename>` | Create new article                                  |
+| `pnpm astro ...`           | Execute `astro add`, `astro check` and other commands |
+| `pnpm astro --help`        | Display Astro CLI help                              |
 
-This template comes pre-configured with [**Sitepins**](https://sitepins.com/?aff=tfgithub), a Git-based Headless CMS designed for seamless content management. You can update your website’s text, images, and configuration without touching a single line of code.
+## 🙏 Acknowledgments
 
-**How to get started:**
+- Special thanks to [saicaca](https://github.com/saicaca) for developing the [fuwari](https://github.com/saicaca/fuwari) template, which Firefly is based on
+- Referenced blogger [霞葉](https://kasuha.com)'s [Bangumi Collection Display](https://kasuha.com/posts/fuwari-enhance-ep2/) and [Email Protection/Image Title](https://kasuha.com/posts/fuwari-enhance-ep1/) solutions
+- Referenced [Mizuki](https://github.com/matsuzaka-yuki/Mizuki)'s banner title, multi-level menu navbar, sakura effect, KaTeX, and Fancybox solutions
+- Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
+- Uses [MetingJS](https://github.com/metowolf/MetingJS) and [APlayer](https://github.com/MoePlayer/APlayer) music player
+- Uses Chibi `Firefly` mascot spine model provided by Bilibili creator [公公的日常](https://space.bilibili.com/3546750017080050)
+- Icons from [Iconify](https://iconify.design/)
+- Firefly-related image assets are copyrighted by [miHoYo](https://www.mihoyo.com/), the developer of ["Honkai: Star Rail"](https://sr.mihoyo.com/).
 
-Click the Edit with Sitepins button below and follow the on-screen instructions to start editing your content visually.
+## 📝 License
 
-  <a target="_blank" href="https://app.sitepins.com/new/clone?name=Bookworm%20Light%20Astro&repository=https://github.com/themefisher/bookworm-light-astro/?aff=tfgithub">
-    <img src="https://sitepins.com/button.svg" alt="Edit with Sitepins">
-  </a>
-  
-<!-- reporting issue -->
+This project is licensed under the [MIT license](https://mit-license.org/). See the [LICENSE](./LICENSE) file for details.
 
-## 🐞Reporting Issues
+Originally forked from [saicaca/fuwari](https://github.com/saicaca/fuwari). Thanks to the original author for their contributions. The original project is licensed under the [MIT License](https://mit-license.org/)
 
-We use GitHub Issues as the official bug tracker for this Template. Please Search [existing issues](https://github.com/themefisher/bookworm-light-astro/issues). It’s possible someone has already reported the same problem.
-If your problem or idea has not been addressed yet, feel free to [open a new issue](https://github.com/themefisher/bookworm-light-astro/issues).
+**Copyright Notice:**
+- Copyright (c) 2024 [saicaca](https://github.com/saicaca) - [fuwari](https://github.com/saicaca/fuwari)
+- Copyright (c) 2025 [CuteLeaf](https://github.com/CuteLeaf) - [Firefly](https://github.com/CuteLeaf/Firefly)
 
-<!-- licence -->
+Under the MIT license, you are free to use, modify, and distribute the code, but you must retain the above copyright notice.
 
-## 📄License
+## 🍀 Contributors
 
-Copyright (c) 2023 - Present, Designed & Developed by [Themefisher](https://themefisher.com)
+Thanks to the following contributors for their contributions to this project. If you have any questions or suggestions, please submit an [Issue](https://github.com/CuteLeaf/Firefly/issues) or [Pull Request](https://github.com/CuteLeaf/Firefly/pulls).
 
-**Code License:** Released under the [MIT](https://github.com/themefisher/bookworm-light-astro/blob/main/LICENSE) license.
+><a href="https://github.com/CuteLeaf/Firefly/graphs/contributors">
+>  <img src="https://contrib.rocks/image?repo=CuteLeaf/Firefly" />
+></a>
 
-**Image license:** The images are only for demonstration purposes. They have their license, we don't have permission to share those images.
+Thanks to the following contributors for their contributions to the original project [fuwari](https://github.com/saicaca/fuwari), which laid the foundation for this project.
 
-## 👨‍💻Need Custom Development Services?
+><a href="https://github.com/saicaca/fuwari/graphs/contributors">
+>  <img src="https://contrib.rocks/image?repo=saicaca/fuwari" />
+></a>
 
-Besides developing beautifully designed and blazing-fast themes, we help businesses create fast, performance-focused, scalable & secure websites based on NextJs, Hugo, Astro, etc.
+## ⭐ Star History
 
-If you need a custom theme, theme customization, or complete website development services from scratch you can [Hire Us](https://themefisher.com/contact).
+[![Star History Chart](https://api.star-history.com/svg?repos=CuteLeaf/Firefly&type=Date)](https://star-history.com/#CuteLeaf/Firefly&Date)
+
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->

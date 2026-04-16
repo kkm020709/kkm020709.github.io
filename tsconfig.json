@@ -1,24 +1,49 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "extends": "astro/tsconfigs/base",
   "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "baseUrl": ".",
-    "target": "es6",
-    "allowJs": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "jsx": "react",
-    "isolatedModules": true,
-    "incremental": true,
-    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true,
+    "allowJs": false,
+    "declaration": true,
+    "plugins": [
+      {
+        "name": "@astrojs/ts-plugin"
+      }
+    ],
     "paths": {
-      "@/components/*": ["./src/layouts/components/*"],
-      "@/shortcodes/*": ["./src/layouts/shortcodes/*"],
-      "@/helpers/*": ["./src/layouts/helpers/*"],
-      "@/partials/*": ["./src/layouts/partials/*"],
-      "@/*": ["./src/*"]
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@assets/*": [
+        "src/assets/*"
+      ],
+      "@constants/*": [
+        "src/constants/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@i18n/*": [
+        "src/i18n/*"
+      ],
+      "@layouts/*": [
+        "src/layouts/*"
+      ],
+      "@/*": [
+        "src/*"
+      ]
     }
   },
-  "include": [".astro/types.d.ts", "**/*.ts", "**/*.tsx", "**/*.astro"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    ".astro/types.d.ts",
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist"
+  ]
 }
