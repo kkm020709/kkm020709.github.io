@@ -41,11 +41,18 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		],
 	});
 
-	// 音乐页
+	// 项目页
 	links.push({
-		name: "音乐",
-		url: "/music/",
-		icon: "material-symbols:music-note",
+		name: "项目",
+		url: "/projects/",
+		icon: "material-symbols:deployed-code",
+	});
+
+	// 杂谈页
+	links.push({
+		name: "杂谈",
+		url: "/chatter/",
+		icon: "material-symbols:chat-outline",
 	});
 
 	// 友链
