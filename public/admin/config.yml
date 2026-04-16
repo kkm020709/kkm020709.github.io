@@ -1,0 +1,28 @@
+backend:
+  name: git-gateway
+  branch: main
+
+site_url: https://example.com
+display_url: https://example.com
+logo_url: /favicon.svg
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+publish_mode: editorial_workflow
+
+collections:
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Publish Date", name: "pubDate", widget: "datetime", format: "YYYY-MM-DD" }
+      - { label: "Update Date", name: "updatedDate", widget: "datetime", required: false, format: "YYYY-MM-DD" }
+      - { label: "Hero Image", name: "heroImage", widget: "image", required: false }
+      - { label: "Body", name: "body", widget: "markdown" }

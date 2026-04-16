@@ -1,63 +1,92 @@
-# Astro Starter Kit: Blog
+# Astro 博客（网页写作自动同步 GitHub）
+
+这个项目基于 Astro 官方 Blog 模板，已接入 Decap CMS 后台配置。  
+目标：你可以在网页后台写作，内容自动提交到 GitHub，Netlify 自动部署上线。
+
+## 已完成的项目结构
+
+- 文章目录：`src/content/blog`
+- CMS 后台页面：`public/admin/index.html`
+- CMS 配置：`public/admin/config.yml`
+- 图片上传目录：`public/uploads`
+
+## 1) 本地开发
 
 ```sh
-npm create astro@latest -- --template blog
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+本地访问：
+- 前台：`http://localhost:4321`
+- 后台：`http://localhost:4321/admin`
 
-Features:
+## 2) 先完成 SSH 连接 GitHub
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+当前已生成 SSH key（文件在你的用户目录）：
+- 私钥：`~/.ssh/id_ed25519_blog`
+- 公钥：`~/.ssh/id_ed25519_blog.pub`
 
-## 🚀 Project Structure
+把公钥内容复制到 GitHub：
+1. 打开 GitHub -> Settings -> SSH and GPG keys -> New SSH key
+2. 粘贴公钥并保存
+3. 验证：
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+```sh
+ssh -T git@github.com
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+看到 `You've successfully authenticated` 即成功。
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## 3) 推送到 GitHub 仓库
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+在 GitHub 创建一个新仓库（建议同名：`blog`），然后执行：
 
-Any static assets, like images, can be placed in the `public/` directory.
+```sh
+git branch -M main
+git remote add origin git@github.com:<你的用户名>/blog.git
+git add .
+git commit -m "feat: initialize Astro blog with Decap CMS"
+git push -u origin main
+```
 
-## 🧞 Commands
+## 4) 部署到 Netlify
 
-All commands are run from the root of the project, from a terminal:
+1. 登录 Netlify，点击 **Add new site** -> **Import an existing project**
+2. 连接 GitHub，选择你的 `blog` 仓库
+3. 构建配置：
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+4. 部署完成后，得到线上域名
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## 5) 开启网页写作（关键）
 
-## 👀 Want to learn more?
+在 Netlify 项目后台：
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+1. `Identity` -> Enable Identity
+2. `Identity` -> Registration preferences -> 推荐先选 **Invite only**
+3. `Identity` -> Services -> Enable **Git Gateway**
+4. `Identity` -> Invite users，邀请你自己的邮箱
+5. 打开 `https://你的域名/admin`，登录后即可在线写作/发布
 
-## Credit
+发布流程：
+- 在 `/admin` 新建文章
+- 保存 Draft 或 Publish
+- Decap CMS 自动向 GitHub 提交内容
+- Netlify 自动触发新一轮部署
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+## 6) 首次上线后务必修改
+
+请把以下内容改成你自己的：
+
+- `astro.config.mjs` 里的 `site`
+- `public/admin/config.yml` 里的 `site_url` 和 `display_url`
+- `src/consts.ts` 的站点标题和描述
+
+## 常用命令
+
+```sh
+npm run dev
+npm run build
+npm run preview
+```
