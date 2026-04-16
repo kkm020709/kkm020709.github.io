@@ -7,21 +7,21 @@ const SITE_LANG = "zh_CN";
 
 export const siteConfig: SiteConfig = {
 	// 站点标题
-	title: "KKM Blog",
+	title: "XingHuiSama の 博客",
 
 	// 站点副标题
-	subtitle: "技术与生活记录",
+	subtitle: "XingHuiSama の 宝藏之地",
 
 	// 站点 URL
 	site_url: "https://kangxia.top",
 
 	// 站点描述
 	description:
-		"基于 Astro Firefly 主题的个人博客，记录技术实践与日常思考。",
+		"在代码、学术与分子动力学模拟间穿梭的普通人。近期正埋头于 GROMACS 模拟研究与神经网络计算。",
 
 	// 站点关键词
 	keywords: [
-		"KKM Blog",
+		"XingHuiSama",
 		"Firefly",
 		"Astro",
 		"ACGN",
@@ -68,10 +68,10 @@ export const siteConfig: SiteConfig = {
 		logo: {
 			type: "image",
 			value: "/assets/images/firefly.png",
-			alt: "KKM Blog",
+			alt: "XingHuiSama",
 		},
 		// 导航栏标题
-		title: "KKM Blog",
+		title: "XingHuiSama の 宝藏之地",
 		// 全宽导航栏，导航栏是否占满屏幕宽度，true：占满，false：不占满
 		widthFull: false,
 		// 导航栏图标和标题是否跟随主题色
@@ -79,7 +79,7 @@ export const siteConfig: SiteConfig = {
 	},
 
 	// 站点开始日期，用于统计运行天数
-	siteStartDate: "2026-04-16",
+	siteStartDate: "2026-01-01",
 
 	// 站点时区（IANA 时区字符串），用于格式化bangumi、rss里的构建日期时间等等..
 	// 示例："Asia/Shanghai", "UTC", 如果为空，则按照构建服务器的时区进行时区转换
@@ -113,9 +113,9 @@ export const siteConfig: SiteConfig = {
 	// bangumi的数据为编译时获取的，所以不是实时数据，请配置bangumi.userId
 	pages: {
 		// 赞助页面开关
-		sponsor: true,
+		sponsor: false,
 		// 留言板页面开关，需要配置评论系统
-		guestbook: true,
+		guestbook: false,
 		// 番组计划页面开关，含追番、游戏、书籍和音乐，dev调试时只获取一页数据，build才会获取全部数据
 		bangumi: false,
 	},

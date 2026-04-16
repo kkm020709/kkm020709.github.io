@@ -2,13 +2,13 @@ import type { ProfileConfig } from "../types/config";
 
 export const profileConfig: ProfileConfig = {
 	// 头像
-	avatar: "/assets/images/avatar.webp",
+	avatar: "https://bu.dusays.com/2026/03/24/69c1e38ac1846.jpg",
 
 	// 名字
-	name: "kkm020709",
+	name: "XingHuiSama",
 
 	// 个人签名
-	bio: "你好，我是 kkm020709。",
+	bio: "在代码、学术与分子动力学模拟间穿梭的普通人。近期正埋头于 GROMACS 模拟研究与神经网络计算。",
 
 	// 链接配置
 	// 已经预装的图标集：fa7-brands，fa7-regular，fa7-solid，material-symbols，simple-icons
@@ -20,19 +20,19 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "Bilibli",
 			icon: "fa7-brands:bilibili",
-			url: "https://space.bilibili.com/",
+			url: "https://github.com/heiehiehi",
 			showName: false,
 		},
 		{
-			name: "GitHub",
+			name: "X",
 			icon: "fa7-brands:github",
-			url: "https://github.com/kkm020709",
+			url: "https://github.com/heiehiehi",
 			showName: false,
 		},
 		{
-			name: "Email",
+			name: "Mail",
 			icon: "fa7-solid:envelope",
-			url: "mailto:kkm0709@163.com",
+			url: "mailto:bilibiliwuwuwu@gmail.com",
 			showName: false,
 		},
 		{

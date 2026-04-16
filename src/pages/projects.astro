@@ -1,0 +1,35 @@
+---
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="项目矩阵" description="开源项目、科研代码与实验室折腾记录。">
+	<section class="grid gap-4">
+		<h1 class="card-base rounded-(--radius-large) p-5 text-2xl font-bold">Projects Matrix</h1>
+
+		<a
+			href="https://github.com/heiehiehi/Computational_Chemistry_Tool"
+			target="_blank"
+			rel="noopener"
+			class="card-base block rounded-(--radius-large) p-5 transition hover:scale-[1.01]"
+		>
+			<h2 class="text-xl font-semibold">Computational Chemistry Tool</h2>
+			<p class="mt-2 text-sm opacity-80">
+				该工具本作者使用在 Win 下的 WSL2 平台，系统为 Ubuntu22，个人使用请依据自己数据进行修改（这些工具只是整合了一些流程）。
+			</p>
+			<div class="mt-3 text-xs opacity-70">Gromacs · RMSF</div>
+		</a>
+
+		<a
+			href="https://github.com/yourusername/next-cyber-blog"
+			target="_blank"
+			rel="noopener"
+			class="card-base block rounded-(--radius-large) p-5 transition hover:scale-[1.01]"
+		>
+			<h2 class="text-xl font-semibold">XingHuiSama の Cloud</h2>
+			<p class="mt-2 text-sm opacity-80">
+				基于 Next.js App Router 构建的高性能全栈个人博客。包含全局状态管理的悬浮音乐播放器、Framer Motion 动画与毛玻璃 UI。
+			</p>
+			<div class="mt-3 text-xs opacity-70">Next.js · React · TailwindCSS · Framer Motion</div>
+		</a>
+	</section>
+</MainGridLayout>

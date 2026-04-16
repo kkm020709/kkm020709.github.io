@@ -1,0 +1,36 @@
+---
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="光影画廊" description="定格时间，封存泰拉与现实的每一次心跳">
+	<section class="grid gap-4">
+		<h1 class="card-base rounded-(--radius-large) p-5 text-2xl font-bold">光影画廊</h1>
+		<p class="card-base rounded-(--radius-large) p-4 text-sm opacity-80">
+			定格时间，封存泰拉与现实的每一次心跳
+		</p>
+
+		<article class="card-base rounded-(--radius-large) p-4">
+			<img
+				src="https://bu.dusays.com/2026/03/24/69c24230de927.jpg"
+				alt="泰拉大陆纪行"
+				class="h-56 w-full rounded-lg object-cover"
+				loading="lazy"
+			/>
+			<h2 class="mt-4 text-xl font-semibold">泰拉大陆纪行</h2>
+			<div class="mt-1 text-xs opacity-70">2026.01 · 2 张照片</div>
+			<p class="mt-2 text-sm opacity-80">关于源石、孤星与前文明的视觉记录（测试用相册）</p>
+		</article>
+
+		<article class="card-base rounded-(--radius-large) p-4">
+			<img
+				src="https://bu.dusays.com/2026/03/24/69c24230a4efe.jpg"
+				alt="唐宋历史巡游"
+				class="h-56 w-full rounded-lg object-cover"
+				loading="lazy"
+			/>
+			<h2 class="mt-4 text-xl font-semibold">唐宋历史巡游</h2>
+			<div class="mt-1 text-xs opacity-70">2025.10 · 3 张照片</div>
+			<p class="mt-2 text-sm opacity-80">寻访千年前的长安与汴梁遗迹（测试用相册）</p>
+		</article>
+	</section>
+</MainGridLayout>

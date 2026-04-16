@@ -1,37 +1,21 @@
-# 关于我 / About Me
+# 关于我
 
-你好！我是 **夏叶** ，一个在数字世界中默默无闻的一片叶子。
+Hello World, I'm XingHuiSama
 
-## 🛠️ 关于本站
+## 个人简介
 
-这个网站使用 **Astro** 框架构建，采用了 [Firefly](https://github.com/CuteLeaf/Firefly) 模板，Firefly 是基于 [Fuwari](https://github.com/saicaca/fuwari) 的二次开发。
+你好，我是 XingHuiSama。  
+专注于**计算化学、人工智能与软件工程**的交叉应用。
 
-**Firefly** 是一款基于 Astro 框架和 Fuwari 模板开发的清新美观且现代化个人博客主题模板，专为技术爱好者和内容创作者设计。该主题融合了现代 Web 技术栈，提供了丰富的功能模块和高度可定制的界面，让您能够轻松打造出专业且美观的个人博客网站。
+## 研究与计算方向
 
+- **图神经网络：** 用于分子性质预测与特征提取。  
+- **分子对接：** 用于评估配体与受体蛋白的结合模式与亲和力。  
+- **分子动力学模拟：** 用于探究生物大分子在原子尺度的动态行为与构象变化。
 
-**🖥️在线预览： [Firefly - Demo site](https://firefly.cuteleaf.cn/)**
+## 软件工程能力
 
-**🏠我的博客： [https://blog.cuteleaf.cn](https://blog.cuteleaf.cn/)**
+- **后端开发：** 使用 **Spring Boot** 框架构建服务端架构，能够处理复杂的数据逻辑与计算任务调度。  
+- **前端开发：** 熟练掌握 **Vue.js** 与 **React** 框架，为复杂科学数据的可视化与交互提供流畅体验。
 
-**📝Firefly使用文档： [https://docs-firefly.cuteleaf.cn](https://docs-firefly.cuteleaf.cn/)**
-
-**⭐Firefly开源地址：[https://github.com/CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly)** 
-
-**⭐Fuwari开源地址：[https://github.com/saicaca/fuwari](https://github.com/saicaca/fuwari)**
-
-::github{repo="CuteLeaf/Firefly"}
-
-::github{repo="saicaca/fuwari"}
-
-
-## 📫 联系方式
-
-如果你想和我交流技术问题，分享有趣的想法，或者只是想打个招呼，欢迎通过以下方式联系我：
-
-- 💻 **GitHub**: [CuteLeaf](https://github.com/CuteLeaf)
-- ✉️ **Email**: [xiaye@msn.com](mailto:xiaye@msn.com)
-
----
-
-*感谢你的来访！希望在这里能找到对你有用的内容！*
-
+欢迎各位朋友联系交流~
