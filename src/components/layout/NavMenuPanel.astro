@@ -26,7 +26,7 @@ const processedLinks = Astro.props.links.map((link: NavBarLink) => ({
                 <!-- 有子菜单的项目 -->
                 <div class="mobile-dropdown" data-mobile-dropdown>
                     <button 
-                        class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8 w-full text-left
+                        class="group flex justify-center items-center py-2 px-3 rounded-lg gap-2 w-full text-center
                             hover:bg-(--btn-plain-bg-hover) active:bg-(--btn-plain-bg-active) transition"
                         data-mobile-dropdown-trigger
                         aria-expanded="false"
@@ -35,14 +35,11 @@ const processedLinks = Astro.props.links.map((link: NavBarLink) => ({
                             {link.icon && <Icon name={link.icon} class="text-[1.1rem] mr-2" />}
                             {link.name}
                         </div>
-                        <Icon name="material-symbols:keyboard-arrow-down-rounded"
-                              class="transition text-[1.25rem] text-(--primary) mobile-dropdown-arrow duration-200"
-                        />
                     </button>
                     <div class="mobile-submenu" data-mobile-submenu>
                         {link.children.map((child) => (
                             <a href={child.external ? child.url : url(child.url)} 
-                               class="group flex justify-between items-center py-2 pl-6 pr-1 rounded-lg gap-8
+                               class="group flex justify-center items-center py-2 px-3 rounded-lg gap-2
                                    hover:bg-(--btn-plain-bg-hover) active:bg-(--btn-plain-bg-active) transition"
                                target={child.external ? "_blank" : null}
                             >
@@ -50,16 +47,13 @@ const processedLinks = Astro.props.links.map((link: NavBarLink) => ({
                                     {child.icon && <Icon name={child.icon} class="text-[1.1rem] mr-2" />}
                                     {child.name}
                                 </div>
-                                {child.external && <Icon name="fa7-solid:arrow-up-right-from-square"
-                                      class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
-                                />}
                             </a>
                         ))}
                     </div>
                 </div>
             ) : (
                 <!-- 普通链接项目 -->
-                <a href={link.external ? link.url : url(link.url)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+                <a href={link.external ? link.url : url(link.url)} class="group flex justify-center items-center py-2 px-3 rounded-lg gap-2
                     hover:bg-(--btn-plain-bg-hover) active:bg-(--btn-plain-bg-active) transition
                 "
                    target={link.external ? "_blank" : null}
@@ -68,12 +62,6 @@ const processedLinks = Astro.props.links.map((link: NavBarLink) => ({
                         {link.icon && <Icon name={link.icon} class="text-[1.1rem] mr-2" />}
                         {link.name}
                     </div>
-                    {!link.external && <Icon name="material-symbols:chevron-right-rounded"
-                          class="transition text-[1.25rem] text-(--primary)"
-                    />}
-                    {link.external && <Icon name="fa7-solid:arrow-up-right-from-square"
-                          class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
-                    />}
                 </a>
             )}
         </div>
@@ -91,9 +79,6 @@ const processedLinks = Astro.props.links.map((link: NavBarLink) => ({
         @apply max-h-96;
     }
     
-    .mobile-dropdown[data-expanded="true"] .mobile-dropdown-arrow {
-        @apply rotate-180;
-    }
 </style>
 
 <script>

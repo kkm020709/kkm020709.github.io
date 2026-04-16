@@ -20,7 +20,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "Bilibli",
 			icon: "fa7-brands:bilibili",
-			url: "https://space.bilibili.com/",
+			url: "https://space.bilibili.com/3546894521338248",
 			showName: false,
 		},
 		{
@@ -32,13 +32,13 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "Email",
 			icon: "fa7-solid:envelope",
-			url: "mailto:kkm0709@163.com",
+			url: "mailto:kkm2002@163.com",
 			showName: false,
 		},
 		{
-			name: "RSS",
-			icon: "fa7-solid:rss",
-			url: "/rss/",
+			name: "QQ",
+			icon: "fa7-brands:qq",
+			url: "https://wpa.qq.com/msgrd?v=3&uin=970989203&site=qq&menu=yes",
 			showName: false,
 		},
 	],
