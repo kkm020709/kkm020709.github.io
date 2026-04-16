@@ -73,13 +73,25 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		url: "/content/",
 		icon: "material-symbols:info",
 		children: [
-			// 根据配置决定是否添加赞助，在siteConfig关闭pages.sponsor时导航栏不显示赞助
-			...(siteConfig.pages.sponsor ? [LinkPreset.Sponsor] : []),
-
-			// 关于页面
-			LinkPreset.About,
-
-			// 根据配置决定是否添加番组计划，在siteConfig关闭pages.bangumi时导航栏不显示番组计划
+			...(siteConfig.pages.sponsor
+				? [
+						{
+							name: "赞赏",
+							url: "/sponsor/",
+							icon: "material-symbols:favorite",
+						},
+					]
+				: []),
+			{
+				name: "关于我",
+				url: "/about/",
+				icon: "material-symbols:person",
+			},
+			{
+				name: "更新历史",
+				url: "/updates/",
+				icon: "material-symbols:history",
+			},
 			...(siteConfig.pages.bangumi ? [LinkPreset.Bangumi] : []),
 		],
 	});

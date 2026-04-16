@@ -4,7 +4,8 @@ import { getCollection } from "astro:content";
 import { getPostUrlBySlug } from "@/utils/url-utils";
 
 const chatterPosts = (await getCollection("posts", ({ data }) => {
-	return import.meta.env.PROD ? data.draft !== true : true;
+	const visible = data.visible !== false;
+	return import.meta.env.PROD ? data.draft !== true && visible : visible;
 }))
 	.filter((post) => {
 		const category = (post.data.category || "").toLowerCase();

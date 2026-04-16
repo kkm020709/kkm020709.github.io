@@ -1,0 +1,66 @@
+---
+import { execSync } from "node:child_process";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+type UpdateItem = {
+	date: string;
+	summary: string;
+};
+
+const summarizeCommitToChinese = (subject: string): string => {
+	const s = subject.toLowerCase();
+
+	if (s.includes("article") || s.includes("archive")) return "调整了文章与归档相关展示。";
+	if (s.includes("music")) return "优化了音乐播放与页面氛围效果。";
+	if (s.includes("chatter")) return "完善了杂谈内容分区与展示逻辑。";
+	if (s.includes("project")) return "更新了项目展示样式与内容结构。";
+	if (s.includes("about")) return "更新了关于页信息与站点说明。";
+	if (s.includes("nav") || s.includes("menu")) return "优化了导航栏与菜单交互。";
+	if (s.includes("style") || s.includes("ui")) return "优化了页面视觉样式与细节。";
+	if (s.includes("loading") || s.includes("speed") || s.includes("perf"))
+		return "提升了页面加载速度与浏览体验。";
+	if (s.includes("revert")) return "回退并整理了部分功能，保留核心体验。";
+	if (s.includes("feat")) return "新增了一项站点功能。";
+	if (s.includes("fix")) return "修复了一项已知问题。";
+	return "优化了站点功能与使用体验。";
+};
+
+let updates: UpdateItem[] = [];
+try {
+	const raw = execSync(
+		'git log -20 --date=format:"%Y-%m-%d %H:%M" --pretty=format:"%ad|%s"',
+		{ encoding: "utf-8" },
+	);
+	updates = raw
+		.split("\n")
+		.filter(Boolean)
+		.map((line) => {
+			const [date = "", subject = ""] = line.split("|");
+			return {
+				date,
+				summary: summarizeCommitToChinese(subject),
+			};
+		});
+} catch {
+	updates = [];
+}
+---
+
+<MainGridLayout title="更新历史" description="站点功能更新记录">
+	<section class="grid gap-3">
+		{
+			updates.length > 0 ? (
+				updates.map((item) => (
+					<article class="card-base rounded-(--radius-large) px-5 py-4">
+						<div class="text-xs opacity-60">{item.date}</div>
+						<div class="mt-1 font-semibold">{item.summary}</div>
+					</article>
+				))
+			) : (
+				<div class="card-base rounded-(--radius-large) px-5 py-4 text-sm opacity-70">
+					暂无更新历史。
+				</div>
+			)
+		}
+	</section>
+</MainGridLayout>
