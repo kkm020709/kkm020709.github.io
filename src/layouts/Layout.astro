@@ -4,6 +4,7 @@ import MicrosoftClarity from "@components/analytics/MicrosoftClarity.astro";
 import FancyboxManager from "@components/features/FancyboxManager.astro";
 import FontManager from "@components/features/FontManager.astro";
 import MusicPlayer from "@components/features/MusicPlayer.astro";
+import PageEnhanceEffects from "@components/features/PageEnhanceEffects.astro";
 import SakuraEffect from "@components/features/SakuraEffect.astro";
 import ConfigCarrier from "@components/layout/ConfigCarrier.astro";
 
@@ -433,6 +434,19 @@ const bannerOffset = `${BANNER_HEIGHT_EXTEND / 2}vh`;
 
     <!-- Music Player -->
     <MusicPlayer />
+    <div id="netease-player-floating" class="hidden md:block">
+      <iframe
+        frameborder="no"
+        border="0"
+        marginwidth="0"
+        marginheight="0"
+        width="330"
+        height="110"
+        src="https://music.163.com/outchain/player?type=0&id=3136952023&auto=1&height=90"
+      ></iframe>
+    </div>
+
+    <PageEnhanceEffects />
 
     <!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
     <div id="page-height-extend" class="hidden h-[300vh]"></div>
@@ -1055,3 +1069,21 @@ function disableAnimation() {
     initIconLoader();
   }
 </script>
+
+<style is:global>
+  #netease-player-floating {
+    position: fixed;
+    right: 0.9rem;
+    bottom: 5.5rem;
+    z-index: 9998;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+  }
+
+  #netease-player-floating iframe {
+    display: block;
+  }
+</style>
