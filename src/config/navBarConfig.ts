@@ -41,11 +41,11 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		],
 	});
 
-	// 网页端写作后台
+	// 音乐页
 	links.push({
-		name: "写作",
-		url: "/admin/",
-		icon: "material-symbols:edit-square-outline",
+		name: "音乐",
+		url: "/music/",
+		icon: "material-symbols:music-note",
 	});
 
 	// 友链

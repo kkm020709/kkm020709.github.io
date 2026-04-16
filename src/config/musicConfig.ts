@@ -3,7 +3,7 @@ import type { MusicPlayerConfig } from "../types/config";
 // 音乐播放器配置
 export const musicPlayerConfig: MusicPlayerConfig = {
 	// 音乐播放器功能开关
-	enable: false,
+	enable: true,
 
 	// 使用方式："meting" 使用 Meting API，"local" 使用本地音乐列表
 	mode: "local",
@@ -39,7 +39,7 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 			{
 				name: "使一颗心免于哀伤",
 				artist: "知更鸟 / HOYO-MiX / Chevy",
-				url: "/assets/music/使一颗心免于哀伤-哼唱.mav",
+				url: "/assets/music/使一颗心免于哀伤-哼唱.wav",
 				cover: "/assets/music/cover/109951169585655912.webp",
 				// 歌词内容，支持 LRC 格式
 				lrc: "",
