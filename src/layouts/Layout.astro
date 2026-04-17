@@ -438,7 +438,7 @@ const bannerOffset = `${BANNER_HEIGHT_EXTEND / 2}vh`;
     <MusicPlayer />
     <div id="netease-player-floating" class="hidden md:block" data-minimized="false">
       <div id="netease-player-handle" class="netease-player-drag-handle">
-        <span class="text-xs font-semibold opacity-80">音乐播放器</span>
+        <span class="text-xs font-semibold" style="color: var(--btn-content); opacity: 0.8;">音乐播放器</span>
         <button id="netease-player-minimize" class="netease-player-control-btn" type="button" aria-label="缩小音乐播放器">
           <span>－</span>
         </button>
@@ -1244,8 +1244,8 @@ function disableAnimation() {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(4px);
+    background: color-mix(in oklch, var(--card-bg) 85%, transparent 15%);
+    backdrop-filter: blur(8px);
     touch-action: none;
   }
 

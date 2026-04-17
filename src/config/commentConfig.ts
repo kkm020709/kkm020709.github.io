@@ -1,8 +1,8 @@
 import type { CommentConfig } from "../types/config";
 
 export const commentConfig: CommentConfig = {
-	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk, livere
-	type: "livere",
+	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk, livere, changyan
+	type: "changyan",
 
 	//twikoo评论系统配置
 	twikoo: {
@@ -73,5 +73,11 @@ export const commentConfig: CommentConfig = {
 	// 来必力评论系统配置
 	livere: {
 		clientId: "Hg10QI9zkzDIkj5057p8",
+	},
+
+	// 畅言云评评论系统配置
+	changyan: {
+		appid: "cyytf2mpR",
+		conf: "prod_78a8d14b1f4c69156018901bbdf9571f",
 	},
 };

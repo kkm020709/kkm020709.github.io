@@ -170,7 +170,8 @@ export type CommentConfig = {
 		| "giscus"
 		| "disqus"
 		| "artalk"
-		| "livere";
+		| "livere"
+		| "changyan";
 	twikoo?: {
 		envId: string;
 		region?: string;
@@ -218,6 +219,10 @@ export type CommentConfig = {
 	};
 	livere?: {
 		clientId: string;
+	};
+	changyan?: {
+		appid: string;
+		conf: string;
 	};
 };
 
