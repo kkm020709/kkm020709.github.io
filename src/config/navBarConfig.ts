@@ -25,7 +25,7 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	// 归档入口
 	links.push({
 		name: "归档",
-		url: "/archive/",
+		url: "/archive-cards/",
 		icon: "material-symbols:inventory-2-outline",
 	});
 
