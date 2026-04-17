@@ -48,3 +48,292 @@ const { appid, conf } = commentConfig.changyan;
   }
 })();
 </script>
+
+<style is:global>
+  /* ========== Changyan Login Popup - Center on Screen ========== */
+  .user-login-wrapper-dw,
+  .visitor-login-wrapper-dw,
+  .module-login-dw {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 10001 !important;
+    border-radius: var(--radius-large, 12px) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2) !important;
+    max-width: 400px !important;
+    width: 90vw !important;
+  }
+
+  /* Backdrop overlay for login */
+  .login-overlay-dw,
+  .mask-dw {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+    z-index: 10000 !important;
+    backdrop-filter: blur(4px) !important;
+  }
+
+  /* ========== Comment Box Area ========== */
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .module-cmt-box {
+    padding: 12px 0 !important;
+    margin-top: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Hide default decorative borders */
+  #SOHUCS .post-wrap-border-l,
+  #SOHUCS .post-wrap-border-r,
+  #SOHUCS .post-wrap-border-t-l,
+  #SOHUCS .post-wrap-border-t-r {
+    display: none !important;
+  }
+
+  #SOHUCS .post-wrap-main {
+    border: none !important;
+  }
+
+  /* Comment textarea wrapper */
+  #SOHUCS .post-wrap-w {
+    background: var(--btn-regular-bg, #f5f5f5) !important;
+    border-radius: var(--radius-large, 12px) !important;
+    border: 1px solid var(--line-divider, #e5e5e5) !important;
+    transition: border-color 0.2s ease !important;
+  }
+
+  #SOHUCS .post-wrap-w:focus-within {
+    border-color: var(--primary, #e74851) !important;
+  }
+
+  /* Submit button */
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-cbox-w .cbox-block-w .block-post-w .post-default-w.default-wrap-w .btn-fw,
+  #SOHUCS .btn-fw {
+    background-color: var(--primary, #e74851) !important;
+    background-image: none !important;
+    border-radius: var(--radius-large, 12px) !important;
+    color: #fff !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1.2rem !important;
+    box-shadow: none !important;
+    transition: opacity 0.2s ease, transform 0.15s ease !important;
+    outline: none !important;
+    border: none !important;
+  }
+
+  #SOHUCS .btn-fw:hover {
+    opacity: 0.88 !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* ========== Header & Login Link ========== */
+  #SOHUCS .header-login {
+    border: none !important;
+    border-radius: var(--radius-large, 12px) !important;
+    color: var(--primary, #e74851) !important;
+    font-weight: 500 !important;
+  }
+
+  #SOHUCS .block-head-w {
+    height: auto !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* User avatar in comment box */
+  #SOHUCS .head-img-w {
+    margin: 0 !important;
+  }
+
+  #SOHUCS .head-img-w img {
+    border-radius: 50% !important;
+    width: 36px !important;
+    height: 36px !important;
+    object-fit: cover !important;
+  }
+
+  /* ========== Comment List Section ========== */
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-list-w {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Section titles (最新评论 / 最热评论) */
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-list-w .block-title-gw ul {
+    border-bottom: 2px solid var(--primary, #e74851) !important;
+    background-color: transparent !important;
+  }
+
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-list-w strong.title-name-bg {
+    color: var(--btn-content, #333) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Individual comment item */
+  #SOHUCS .wrap-action-gw {
+    border-bottom: 1px solid var(--line-divider, #eee) !important;
+    padding: 1rem 0 !important;
+  }
+
+  #SOHUCS .block-cont-gw {
+    padding: 0.75rem 0 !important;
+    border: none !important;
+  }
+
+  /* Comment reply floor */
+  #SOHUCS .build-floor-gw {
+    background: var(--btn-regular-bg, #f7f7f7) !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 0.8rem !important;
+    margin-top: 0.5rem !important;
+    border: 1px solid var(--line-divider, #eee) !important;
+  }
+
+  /* User names in comments */
+  #SOHUCS #SOHU_MAIN a {
+    color: var(--primary, #e74851) !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+  }
+
+  #SOHUCS #SOHU_MAIN a:hover {
+    opacity: 0.8 !important;
+  }
+
+  #SOHUCS .user-name-gw > a {
+    text-decoration: none !important;
+  }
+
+  /* Comment text */
+  #SOHUCS .wrap-cont-gw,
+  #SOHUCS .cont-msg-gw {
+    color: var(--btn-content, #333) !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Comment time & meta */
+  #SOHUCS .wrap-time-gw,
+  #SOHUCS .time-gw {
+    color: var(--btn-content, #999) !important;
+    opacity: 0.6 !important;
+  }
+
+  /* ========== Hide service/ad bar ========== */
+  #SOHUCS .section-service-w {
+    height: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Hide news recommendation */
+  #SOHUCS .section-newslist-w {
+    display: none !important;
+  }
+
+  /* ========== Pagination ========== */
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-page-w .page-wrap-w a,
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-page-w .page-wrap-gw a {
+    color: var(--btn-content, #333) !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--line-divider, #e5e5e5) !important;
+    transition: all 0.15s ease !important;
+  }
+
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-page-w .page-wrap-w a:hover {
+    border-color: var(--primary, #e74851) !important;
+    color: var(--primary, #e74851) !important;
+  }
+
+  #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-page-w .page-wrap-w a.wrap-current-e {
+    color: #fff !important;
+    font-weight: bold !important;
+    background-color: var(--primary, #e74851) !important;
+    border-color: var(--primary, #e74851) !important;
+  }
+
+  /* ========== Mobile WAP Overrides ========== */
+  @media (max-width: 999px) {
+    .module-mobile-cmt-header {
+      height: auto !important;
+      padding: 1rem 0 !important;
+    }
+
+    .comment-number,
+    .comment-text {
+      background-color: transparent !important;
+      color: var(--btn-content, #333) !important;
+      font-size: 1rem !important;
+      font-weight: 600 !important;
+    }
+
+    .comment-input {
+      border: 1px solid var(--line-divider, #e5e5e5) !important;
+      border-radius: var(--radius-large, 12px) !important;
+      background-color: var(--btn-regular-bg, #f5f5f5) !important;
+      font-size: 0.9rem !important;
+      padding: 0.75rem !important;
+    }
+
+    .comment-input:focus {
+      border-color: var(--primary, #e74851) !important;
+    }
+
+    .box-footer-button {
+      background-color: var(--primary, #e74851) !important;
+      background-image: none !important;
+      border-radius: var(--radius-large, 12px) !important;
+      color: #fff !important;
+      font-weight: 600 !important;
+    }
+
+    .header-login {
+      font-size: 0.9rem !important;
+      color: var(--primary, #e74851) !important;
+    }
+  }
+
+  /* ========== Dark Mode Overrides ========== */
+  :root.dark #SOHUCS .post-wrap-w {
+    background: var(--btn-regular-bg) !important;
+    border-color: var(--line-divider) !important;
+  }
+
+  :root.dark #SOHUCS .build-floor-gw {
+    background: var(--btn-regular-bg) !important;
+    border-color: var(--line-divider) !important;
+  }
+
+  :root.dark #SOHUCS .wrap-cont-gw,
+  :root.dark #SOHUCS .cont-msg-gw {
+    color: var(--btn-content) !important;
+  }
+
+  :root.dark #SOHUCS #SOHU_MAIN #SOHU-comment-main .section-list-w strong.title-name-bg {
+    color: var(--btn-content) !important;
+  }
+
+  :root.dark .user-login-wrapper-dw,
+  :root.dark .visitor-login-wrapper-dw,
+  :root.dark .module-login-dw {
+    background: var(--card-bg) !important;
+    color: var(--btn-content) !important;
+  }
+
+  :root.dark .mask-dw,
+  :root.dark .login-overlay-dw {
+    background: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  @media (max-width: 999px) {
+    :root.dark .comment-number,
+    :root.dark .comment-text {
+      color: var(--btn-content) !important;
+    }
+
+    :root.dark .comment-input {
+      background-color: var(--btn-regular-bg) !important;
+      border-color: var(--line-divider) !important;
+      color: var(--btn-content) !important;
+    }
+  }
+</style>
