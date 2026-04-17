@@ -161,9 +161,16 @@ export type LicenseConfig = {
 export type CommentConfig = {
 	/**
 	 * 当前启用的评论系统类型
-	 * "none" | "twikoo" | "waline" | "giscus" | "disqus" | 'artalk'
+	 * "none" | "twikoo" | "waline" | "giscus" | "disqus" | "artalk" | "livere"
 	 */
-	type: "none" | "twikoo" | "waline" | "giscus" | "disqus" | "artalk";
+	type:
+		| "none"
+		| "twikoo"
+		| "waline"
+		| "giscus"
+		| "disqus"
+		| "artalk"
+		| "livere";
 	twikoo?: {
 		envId: string;
 		region?: string;
@@ -208,6 +215,9 @@ export type CommentConfig = {
 	};
 	disqus?: {
 		shortname: string;
+	};
+	livere?: {
+		clientId: string;
 	};
 };
 

@@ -50,7 +50,7 @@ export const siteConfig: SiteConfig = {
 	favicon: [
 		{
 			// 图标文件路径
-			src: "/assets/images/favicon.ico",
+			src: "/assets/images/kkm-spark.svg",
 			// 可选，指定主题 'light' | 'dark'
 			// theme: "light",
 			// 可选，图标大小
@@ -67,7 +67,7 @@ export const siteConfig: SiteConfig = {
 		// { type: "image", value: "https://example.com/logo.png", alt: "Firefly Logo" }
 		logo: {
 			type: "image",
-			value: "/assets/images/firefly.png",
+			value: "/assets/images/kkm-spark.svg",
 			alt: "KKM Blog",
 		},
 		// 导航栏标题

@@ -1,8 +1,8 @@
 import type { CommentConfig } from "../types/config";
 
 export const commentConfig: CommentConfig = {
-	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk，默认为none，即不启用评论系统
-	type: "none",
+	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk, livere
+	type: "livere",
 
 	//twikoo评论系统配置
 	twikoo: {
@@ -68,5 +68,10 @@ export const commentConfig: CommentConfig = {
 	disqus: {
 		// 获取 Disqus 评论系统
 		shortname: "firefly",
+	},
+
+	// 来必力评论系统配置
+	livere: {
+		clientId: "Hg10QI9zkzDIkj5057p8",
 	},
 };

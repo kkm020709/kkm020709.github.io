@@ -22,27 +22,11 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		},
 	];
 
-	// 自定义导航栏链接,并且支持多级菜单
+	// 归档入口
 	links.push({
-		name: "链接",
-		url: "/links/",
-		icon: "material-symbols:link",
-
-		// 子菜单
-		children: [
-			{
-				name: "GitHub",
-				url: "https://github.com/kkm020709/kkm020709.github.io",
-				external: true,
-				icon: "fa7-brands:github",
-			},
-			{
-				name: "Bilibili",
-				url: "https://space.bilibili.com/38932988",
-				external: true,
-				icon: "fa7-brands:bilibili",
-			},
-		],
+		name: "归档",
+		url: "/archive/",
+		icon: "material-symbols:inventory-2-outline",
 	});
 
 	// 项目页

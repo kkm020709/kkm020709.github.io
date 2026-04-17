@@ -7,6 +7,7 @@ import { removeFileExtension } from "@/utils/url-utils";
 import Artalk from "./Artalk.astro";
 import Disqus from "./Disqus.astro";
 import Giscus from "./Giscus.astro";
+import Livere from "./Livere.astro";
 import Twikoo from "./Twikoo.astro";
 import Waline from "./Waline.astro";
 
@@ -53,7 +54,8 @@ let commentService: string = commentConfig?.type || "none";
         {commentService === "waline" && <Waline path={path} />}
         {commentService === "giscus" && <Giscus />}
         {commentService === "disqus" && <Disqus identifier={slug} url={url} title={'title' in post.data ? post.data.title : slug} />}
-          {commentService === "artalk" && <Artalk path={path} />}
+        {commentService === "artalk" && <Artalk path={path} />}
+        {commentService === "livere" && <Livere />}
         {commentService === "none" && (
           <div class="text-center py-8 text-(--content-meta)">
             <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-(--btn-regular-bg) flex items-center justify-center">

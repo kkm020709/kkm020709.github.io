@@ -1,0 +1,12 @@
+---
+import { commentConfig } from "@/config";
+
+if (!commentConfig || !commentConfig.livere?.clientId) {
+	throw new Error("Livere comments are not configured");
+}
+
+const clientId = commentConfig.livere.clientId;
+---
+
+<livere-comment client-id={clientId}></livere-comment>
+<script type="module" src="https://www.livere.org/livere-widget.js"></script>
