@@ -432,11 +432,7 @@ const initialLayoutClass =
     min-height: 18rem;
   }
 
-  @media (min-width: 1024px) {
-    #post-list-container.grid-mode :global(.post-card-item.has-cover) {
-      grid-column: span 2 / span 2;
-    }
-  }
+  /* has-cover cards same width as no-cover, just taller */
 
   #post-list-container.grid-mode :global(.post-card-image) {
     width: 100% !important;

@@ -5,7 +5,7 @@ import { profileConfig } from "@/config/profileConfig";
 import { url } from "@/utils/url-utils";
 
 const getCopyOnClick = (text: string) =>
-	`(function(event){event.preventDefault();event.stopPropagation();const anchor=this;const value=${JSON.stringify(text)};const copiedText='已复制';const showCopied=()=>{anchor.dataset.copied='true';anchor.setAttribute('title',copiedText);setTimeout(()=>{anchor.dataset.copied='false';anchor.removeAttribute('title');},1200);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(value).then(showCopied).catch(()=>{showCopied();});}else{showCopied();}return false;}).call(this,event);`;
+	`(function(event){event.preventDefault();event.stopPropagation();const value=${JSON.stringify(text)};const showToast=()=>{let t=document.getElementById('copy-toast');if(!t){t=document.createElement('div');t.id='copy-toast';t.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.9);z-index:99999;padding:0.65rem 1.6rem;border-radius:var(--radius-large,12px);background:var(--card-bg,#fff);color:var(--btn-content,#333);border:1px solid var(--line-divider,#e5e5e5);box-shadow:0 4px 24px rgba(0,0,0,0.12);font-size:0.95rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity 0.25s ease,transform 0.25s ease;';document.body.appendChild(t);}t.textContent='\\u5df2\\u590d\\u5236';t.style.opacity='1';t.style.transform='translate(-50%,-50%) scale(1)';clearTimeout(window._copyToastTimer);window._copyToastTimer=setTimeout(()=>{t.style.opacity='0';t.style.transform='translate(-50%,-50%) scale(0.9)';},1400);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(value).then(showToast).catch(showToast);}else{showToast();}return false;}).call(this,event);`;
 ---
 
 <div class="card-base p-3">
@@ -72,11 +72,10 @@ const getCopyOnClick = (text: string) =>
                             {showName && item.name}
                         </a>
                     } else if (item.copyText) {
-                        return <a rel="me" aria-label={item.name} href="#" data-copied="false" onclick={getCopyOnClick(item.copyText)}
-                                class={`${className} relative`}>
+                        return <a rel="me" aria-label={item.name} href="#" onclick={getCopyOnClick(item.copyText)}
+                                class={className}>
                             <Icon name={item.icon} class="text-[1.5rem]"></Icon>
                             {showName && item.name}
-                            <span class="copy-feedback">已复制</span>
                         </a>
                     } else {
                         return <a rel="me" aria-label={item.name} href={item.url} target="_blank" class={className}>
@@ -106,11 +105,10 @@ const getCopyOnClick = (text: string) =>
                             {item.name}
                         </a>
                     } else if (item.copyText) {
-                        return <a rel="me" aria-label={item.name} href="#" data-copied="false" onclick={getCopyOnClick(item.copyText)}
-                                    class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95 relative">
+                        return <a rel="me" aria-label={item.name} href="#" onclick={getCopyOnClick(item.copyText)}
+                                    class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
                                 <Icon name={item.icon} class="text-[1.5rem]"></Icon>
                                 {item.name}
-                                <span class="copy-feedback">已复制</span>
                             </a>
                     } else {
                         return <a rel="me" aria-label={item.name} href={item.url} target="_blank"
@@ -124,24 +122,3 @@ const getCopyOnClick = (text: string) =>
   </div>
 </div>
 
-<style>
-  .copy-feedback {
-    position: absolute;
-    top: -1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.7rem;
-    padding: 0.1rem 0.4rem;
-    border-radius: 0.35rem;
-    background: var(--btn-regular-bg);
-    border: 1px solid var(--line-divider);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    white-space: nowrap;
-  }
-
-  a[data-copied="true"] .copy-feedback {
-    opacity: 1;
-  }
-</style>

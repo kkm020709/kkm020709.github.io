@@ -36,7 +36,9 @@
 	let allPosts: RenderPost[] = [];
 	let filteredPosts: RenderPost[] = [];
 	let categoryOptions: string[] = [];
+	let tagOptions: string[] = [];
 	let selectedCategory = "all";
+	let selectedTag = "";
 	let keyword = "";
 	let failedCoverIds = new Set<string>();
 	const params = new URLSearchParams(window.location.search);
@@ -76,6 +78,7 @@
 		filteredPosts = allPosts.filter((post) => {
 			const matchedCategory = selectedCategory === "all" || post.category === selectedCategory;
 			if (!matchedCategory) return false;
+			if (selectedTag && !post.tags.includes(selectedTag)) return false;
 			if (!keywordText) return true;
 			const tagText = post.tags.join(" ").toLowerCase();
 			return (
@@ -84,6 +87,11 @@
 				tagText.includes(keywordText)
 			);
 		});
+	}
+
+	function selectTag(tag: string) {
+		selectedTag = selectedTag === tag ? "" : tag;
+		applyClientFilters();
 	}
 
 	function handleCoverError(postId: string) {
@@ -127,9 +135,18 @@
 					requestedCover: coverUrl.length > 0,
 				};
 			});
-		categoryOptions = Array.from(new Set(allPosts.map((post) => post.category))).sort((a, b) =>
+		categoryOptions = Array.from(new Set(allPosts.map((p) => p.category))).sort((a, b) =>
 			a.localeCompare(b, "zh-CN"),
 		);
+		const tagCount = new Map<string, number>();
+		for (const p of allPosts) {
+			for (const t of p.tags) {
+				tagCount.set(t, (tagCount.get(t) || 0) + 1);
+			}
+		}
+		tagOptions = Array.from(tagCount.entries())
+			.sort((a, b) => b[1] - a[1])
+			.map(([name]) => name);
 		applyClientFilters();
 	});
 </script>
@@ -156,6 +173,17 @@
 				{/each}
 			</select>
 		</div>
+
+		{#if tagOptions.length > 0}
+			<div class="archive-tag-bar">
+				{#each tagOptions as tag}
+					<button
+						class="tag-pill {selectedTag === tag ? 'active' : ''}"
+						on:click={() => selectTag(tag)}
+					>#{tag}</button>
+				{/each}
+			</div>
+		{/if}
 	{/if}
 
 	{#if filteredPosts.length > 0}
@@ -244,6 +272,37 @@
 	.archive-filter-bar input:focus,
 	.archive-filter-bar select:focus {
 		border-color: var(--primary);
+	}
+
+	.archive-tag-bar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		padding: 0.5rem 0;
+	}
+
+	.tag-pill {
+		font-size: 0.78rem;
+		padding: 0.22rem 0.65rem;
+		border-radius: 999px;
+		border: 1px solid var(--line-divider);
+		background: var(--btn-regular-bg);
+		color: var(--btn-content);
+		cursor: pointer;
+		transition: all 0.15s ease;
+		opacity: 0.82;
+	}
+
+	.tag-pill:hover {
+		border-color: var(--primary);
+		opacity: 1;
+	}
+
+	.tag-pill.active {
+		background: var(--primary);
+		color: #fff;
+		border-color: var(--primary);
+		opacity: 1;
 	}
 
 	.archive-grid {
