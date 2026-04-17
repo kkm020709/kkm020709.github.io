@@ -1,14 +1,13 @@
 ---
-import { getEntry, render } from "astro:content";
 import Comment from "@components/comment/index.astro";
 import Markdown from "@components/common/Markdown.astro";
 import { Icon } from "astro-icon/components";
+import { getEntry, render } from "astro:content";
 import { commentConfig, siteConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
-// 检查页面是否启用
 if (!siteConfig.pages.guestbook) {
 	return Astro.redirect("/404/");
 }
@@ -21,48 +20,75 @@ if (!guestbookPost) {
 
 const { Content } = await render(guestbookPost);
 
-// 检查评论系统是否启用
 const isCommentEnabled = commentConfig?.type && commentConfig.type !== "none";
 
-// 页面标题和描述
 const title = i18n(I18nKey.guestbook);
 const description = i18n(I18nKey.guestbookDescription);
 ---
 
 <MainGridLayout title={title} description={description}>
-  <div
-    class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
-  >
-    <div class="card-base z-10 px-9 py-6 relative w-full">
-      <!-- 页面标题和描述 -->
-      <div class="mb-8">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="h-8 w-8 rounded-lg bg-(--primary) flex items-center justify-center text-white dark:text-black/70">
-            <Icon name="material-symbols:chat" class="text-[1.5rem]"></Icon>
+  {/* ========== 页面 Hero 卡片 ========== */}
+  <section class="guestbook-hero card-base relative overflow-hidden mb-4">
+    {/* 背景装饰 */}
+    <div class="guestbook-hero-bg" aria-hidden="true">
+      <div class="hero-blob hero-blob-1"></div>
+      <div class="hero-blob hero-blob-2"></div>
+      <svg class="hero-grid" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <pattern id="guestbook-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.5" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#guestbook-grid)" />
+      </svg>
+    </div>
+
+    <div class="relative z-10 px-6 md:px-10 py-8 md:py-10">
+      {/* 标题行 */}
+      <div class="flex items-start md:items-center gap-4 flex-col md:flex-row md:justify-between">
+        <div class="flex items-center gap-4">
+          <div class="guestbook-icon">
+            <Icon name="material-symbols:chat-bubble-outline-rounded" class="text-[1.75rem]" />
           </div>
-          <h1 class="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-            {title}
-          </h1>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold text-(--btn-content) leading-tight">
+              {title}
+            </h1>
+            {description && (
+              <p class="text-sm md:text-base text-(--content-meta) mt-1">
+                {description}
+              </p>
+            )}
+          </div>
         </div>
-        {description && (
-          <p class="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
-            {description}
-          </p>
+
+        {/* 状态胶囊 */}
+        {isCommentEnabled && (
+          <div class="guestbook-status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="text-xs font-medium">留言系统运行中</span>
+          </div>
         )}
       </div>
-      
-      <Markdown class="mt-2">
-        <Content />
-      </Markdown>
-    </div>
-  </div>
 
-  <!-- 评论区 -->
-  <div class="mt-4">
+      {/* 分隔线 */}
+      <div class="my-6 h-px bg-gradient-to-r from-(--primary)/50 via-(--line-divider) to-transparent"></div>
+
+      {/* 友情提示（来自 guestbook.md） */}
+      <div class="guestbook-tips">
+        <Markdown>
+          <Content />
+        </Markdown>
+      </div>
+    </div>
+  </section>
+
+  {/* ========== 评论/留言 组件 ========== */}
+  <div>
     {isCommentEnabled ? (
       <Comment post={guestbookPost} customPath="/guestbook/" />
     ) : (
-      <div class="card-base p-8 mb-6 relative overflow-hidden">
+      <section class="card-base p-8 mb-6 relative overflow-hidden">
         <div class="text-center py-8 text-(--content-meta)">
           <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-(--btn-regular-bg) flex items-center justify-center">
             <svg
@@ -76,7 +102,7 @@ const description = i18n(I18nKey.guestbookDescription);
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              ></path>
+              />
             </svg>
           </div>
           <p class="text-base mb-2">{i18n(I18nKey.commentNotConfigured)}</p>
@@ -84,7 +110,132 @@ const description = i18n(I18nKey.guestbookDescription);
             {i18n(I18nKey.guestbookCommentHint)}
           </p>
         </div>
-      </div>
+      </section>
     )}
   </div>
 </MainGridLayout>
+
+<style>
+  .guestbook-hero {
+    border-radius: var(--radius-large);
+    min-height: 8rem;
+  }
+
+  .guestbook-hero-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    color: var(--primary);
+  }
+
+  .hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.12;
+    background: var(--primary);
+  }
+
+  .hero-blob-1 {
+    width: 260px;
+    height: 260px;
+    top: -60px;
+    right: -60px;
+  }
+
+  .hero-blob-2 {
+    width: 180px;
+    height: 180px;
+    bottom: -40px;
+    left: -40px;
+    opacity: 0.08;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.05;
+    color: var(--primary);
+  }
+
+  .guestbook-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(
+      135deg,
+      var(--primary) 0%,
+      color-mix(in srgb, var(--primary) 70%, white) 100%
+    );
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 24px -6px color-mix(in srgb, var(--primary) 55%, transparent);
+    flex-shrink: 0;
+  }
+
+  :global(html.dark) .guestbook-icon {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .guestbook-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--primary) 12%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--line-divider));
+    color: var(--btn-content);
+    width: fit-content;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #22c55e;
+    box-shadow: 0 0 0 3px color-mix(in srgb, #22c55e 25%, transparent);
+    animation: guestbook-status-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes guestbook-status-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, #22c55e 45%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 8px color-mix(in srgb, #22c55e 0%, transparent);
+    }
+  }
+
+  .guestbook-tips :global(ul) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .guestbook-tips :global(ul li) {
+    position: relative;
+    padding-left: 1.75rem;
+    line-height: 1.7;
+    color: var(--btn-content);
+  }
+
+  .guestbook-tips :global(ul li::before) {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 50%, transparent));
+    box-shadow: 0 2px 6px -2px color-mix(in srgb, var(--primary) 45%, transparent);
+  }
+</style>
