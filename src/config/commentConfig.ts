@@ -2,7 +2,7 @@ import type { CommentConfig } from "../types/config";
 
 export const commentConfig: CommentConfig = {
 	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk, livere, changyan
-	type: "changyan",
+	type: "giscus",
 
 	//twikoo评论系统配置
 	twikoo: {
@@ -40,27 +40,16 @@ export const commentConfig: CommentConfig = {
 
 	//giscus评论系统配置
 	giscus: {
-		// 设置 Giscus 评论系统仓库
-		repo: "CuteLeaf/Firefly",
-		// 设置 Giscus 评论系统仓库ID
-		repoId: "R_kgD2gfdFGd",
-		// 设置 Giscus 评论系统分类
+		repo: "kkm020709/kkm020709.github.io",
+		repoId: "R_kgDOOTaRlw",
 		category: "General",
-		// 获取 Giscus 评论系统分类ID
-		categoryId: "DIC_kwDOKy9HOc4CegmW",
-		// 获取 Giscus 评论系统映射方式
-		mapping: "title",
-		// 获取 Giscus 评论系统严格模式
+		categoryId: "DIC_kwDOOTaRl84CljPo",
+		mapping: "pathname",
 		strict: "0",
-		// 获取 Giscus 评论系统反应功能
 		reactionsEnabled: "1",
-		// 获取 Giscus 评论系统元数据功能
-		emitMetadata: "1",
-		// 获取 Giscus 评论系统输入位置
+		emitMetadata: "0",
 		inputPosition: "top",
-		// 获取 Giscus 评论系统语言
 		lang: "zh-CN",
-		// 获取 Giscus 评论系统加载方式
 		loading: "lazy",
 	},
 
