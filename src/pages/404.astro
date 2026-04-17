@@ -6,69 +6,548 @@ import MainGridLayout from "@/layouts/MainGridLayout.astro";
 import { url } from "@/utils/url-utils";
 ---
 
-<MainGridLayout title={i18n(I18nKey.notFound)} description={i18n(I18nKey.notFoundDescription)}>
-    <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-96">
-        <div class="card-base z-10 px-9 py-12 relative w-full flex flex-col items-center justify-center text-center">
-            <!-- 404 大号数字 -->
-            <div class="text-8xl md:text-9xl font-bold text-(--primary) opacity-20 mb-4">
-                {i18n(I18nKey.notFound)}
-            </div>
-            
-            <!-- 404 图标 -->
-            <div class="mb-6">
-                <Icon name="material-symbols:error-outline" class="text-6xl text-(--primary)" />
-            </div>
-            
-            <!-- 标题 -->
-            <h1 class="text-3xl md:text-4xl font-bold mb-4 text-90">
-                {i18n(I18nKey.notFoundTitle)}
-            </h1>
-            
-            <!-- 描述 -->
-            <p class="text-lg text-75 mb-8 max-w-md">
-                {i18n(I18nKey.notFoundDescription)}
-            </p>
-            
-            <!-- 返回首页按钮 -->
-            <a 
-                href={url("/")}
-                class="inline-flex items-center gap-2 px-6 py-3 bg-(--primary) text-white rounded-(--radius-large) hover:bg-(--btn-content) transition-colors duration-200 font-medium"
-            >
-                <Icon name="material-symbols:home" class="text-xl" />
-                {i18n(I18nKey.backToHome)}
-            </a>
-            
-            <!-- 装饰性元素 -->
-            <div class="absolute top-4 left-4 opacity-10">
-                <Icon name="material-symbols:sentiment-sad" class="text-4xl text-(--primary)" />
-            </div>
-            <div class="absolute bottom-4 right-4 opacity-10">
-                <Icon name="material-symbols:search-off" class="text-4xl text-(--primary)" />
-            </div>
-        </div>
+<MainGridLayout
+  title={i18n(I18nKey.notFound)}
+  description={i18n(I18nKey.notFoundDescription)}
+>
+  <section class="not-found-shell card-base relative overflow-hidden">
+    {/* ============== 星空背景 ============== */}
+    <div class="space-bg" aria-hidden="true">
+      <div class="stars stars-1"></div>
+      <div class="stars stars-2"></div>
+      <div class="stars stars-3"></div>
+      <div class="shooting-star shooting-star-1"></div>
+      <div class="shooting-star shooting-star-2"></div>
+
+      {/* 彩色星云 */}
+      <div class="nebula nebula-1"></div>
+      <div class="nebula nebula-2"></div>
     </div>
+
+    {/* ============== 主要内容 ============== */}
+    <div class="not-found-content">
+      <div class="not-found-inner">
+        {/* 左侧：数字 4 + 星球 + 数字 4 */}
+        <div class="nf-hero">
+          <span class="nf-digit nf-digit-left">4</span>
+
+          {/* 星球（中间的 0） */}
+          <div class="nf-planet-wrap" aria-hidden="true">
+            <div class="nf-planet">
+              <div class="planet-craters">
+                <span class="crater crater-1"></span>
+                <span class="crater crater-2"></span>
+                <span class="crater crater-3"></span>
+                <span class="crater crater-4"></span>
+              </div>
+              <div class="planet-ring"></div>
+            </div>
+            <div class="nf-astronaut">
+              <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="suit" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#ffffff" />
+                    <stop offset="1" stop-color="#d1d5db" />
+                  </linearGradient>
+                  <radialGradient id="visor" cx="0.5" cy="0.4">
+                    <stop offset="0" stop-color="#6ee7ff" />
+                    <stop offset="0.6" stop-color="#0ea5e9" />
+                    <stop offset="1" stop-color="#0f172a" />
+                  </radialGradient>
+                </defs>
+                {/* 连接绳 */}
+                <path
+                  d="M 50 22 C 20 40, 10 80, 30 120"
+                  stroke="#94a3b8"
+                  stroke-width="1"
+                  stroke-dasharray="2 3"
+                  fill="none"
+                />
+                {/* 背包 */}
+                <rect x="28" y="48" width="44" height="38" rx="8" fill="#cbd5e1" />
+                {/* 身体 */}
+                <ellipse cx="50" cy="78" rx="22" ry="28" fill="url(#suit)" />
+                {/* 手臂 */}
+                <rect
+                  x="18"
+                  y="62"
+                  width="16"
+                  height="36"
+                  rx="8"
+                  fill="url(#suit)"
+                  transform="rotate(-18 26 80)"
+                />
+                <rect
+                  x="66"
+                  y="62"
+                  width="16"
+                  height="36"
+                  rx="8"
+                  fill="url(#suit)"
+                  transform="rotate(22 74 80)"
+                />
+                {/* 腿 */}
+                <rect x="36" y="100" width="12" height="30" rx="6" fill="url(#suit)" />
+                <rect x="52" y="100" width="12" height="30" rx="6" fill="url(#suit)" />
+                {/* 头盔 */}
+                <circle cx="50" cy="40" r="22" fill="#e5e7eb" />
+                {/* 面罩 */}
+                <ellipse cx="50" cy="40" rx="16" ry="14" fill="url(#visor)" />
+                {/* 面罩高光 */}
+                <ellipse
+                  cx="44"
+                  cy="34"
+                  rx="5"
+                  ry="3"
+                  fill="#ffffff"
+                  opacity="0.6"
+                />
+                {/* 胸前控制按钮 */}
+                <circle cx="50" cy="84" r="2" fill="#ef4444" />
+                <circle cx="56" cy="84" r="2" fill="#22c55e" />
+              </svg>
+            </div>
+          </div>
+
+          <span class="nf-digit nf-digit-right">4</span>
+        </div>
+
+        {/* 标题 / 描述 */}
+        <h1 class="nf-title">{i18n(I18nKey.notFoundTitle)}</h1>
+        <p class="nf-desc">{i18n(I18nKey.notFoundDescription)}</p>
+
+        {/* 按钮组 */}
+        <div class="nf-actions">
+          <a href={url("/")} class="nf-btn nf-btn-primary">
+            <Icon name="material-symbols:home" class="text-xl" />
+            <span>{i18n(I18nKey.backToHome)}</span>
+          </a>
+          <button
+            type="button"
+            class="nf-btn nf-btn-ghost"
+            onclick="history.length > 1 ? history.back() : (window.location.href='/')"
+          >
+            <Icon name="material-symbols:arrow-back-rounded" class="text-xl" />
+            <span>返回上一页</span>
+          </button>
+        </div>
+
+        {/* 装饰小文字 */}
+        <p class="nf-footnote">
+          <span class="pulse-dot"></span>
+          <span>卫星信号丢失 · LOST IN SPACE</span>
+        </p>
+      </div>
+    </div>
+  </section>
 </MainGridLayout>
 
 <style>
-    /* 添加一些动画效果 */
-    .card-base {
-        animation: fadeInUp 0.6s ease-out;
+  /* ========== 容器 ========== */
+  .not-found-shell {
+    min-height: 560px;
+    padding: 0;
+    border-radius: var(--radius-large);
+    color: #e5e7eb;
+    background:
+      radial-gradient(
+        ellipse at center,
+        #1b1e3c 0%,
+        #0f1026 45%,
+        #05060f 100%
+      );
+    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.55);
+  }
+
+  /* ========== 星空背景 ========== */
+  .space-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* 多层不同密度的星星 —— 利用 box-shadow 伪造 */
+  .stars {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+  }
+  .stars::after,
+  .stars::before {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 50%;
+  }
+
+  .stars-1::after {
+    left: 8%;  top: 12%;
+    box-shadow:
+      60px 40px #ffffff, 120px 80px #cbd5e1, 180px 20px #ffffff,
+      220px 130px #e2e8f0, 260px 60px #ffffff, 320px 180px #cbd5e1,
+      360px 100px #ffffff, 400px 220px #e2e8f0, 450px 40px #ffffff,
+      500px 160px #cbd5e1, 560px 260px #ffffff, 600px 20px #ffffff,
+      640px 130px #e2e8f0, 680px 80px #ffffff, 720px 240px #cbd5e1,
+      780px 180px #ffffff, 820px 60px #ffffff, 880px 220px #e2e8f0,
+      920px 100px #ffffff, 960px 280px #cbd5e1;
+    animation: twinkle 4s ease-in-out infinite;
+  }
+  .stars-2::after {
+    left: 0;  top: 0;
+    width: 1px; height: 1px;
+    box-shadow:
+      30px 90px #ffffff, 90px 220px #cbd5e1, 150px 30px #ffffff,
+      210px 140px #e2e8f0, 270px 320px #ffffff, 330px 200px #cbd5e1,
+      390px 60px #ffffff, 450px 340px #e2e8f0, 510px 170px #ffffff,
+      570px 110px #cbd5e1, 630px 280px #ffffff, 690px 240px #ffffff,
+      750px 50px #e2e8f0, 810px 310px #ffffff, 870px 160px #cbd5e1,
+      930px 220px #ffffff, 990px 350px #ffffff, 1020px 80px #e2e8f0;
+    animation: twinkle 6s ease-in-out 1s infinite;
+  }
+  .stars-3::after {
+    left: 0;  top: 0;
+    width: 3px; height: 3px;
+    box-shadow:
+      100px 50px #fef9c3, 260px 340px #fbbf24, 430px 120px #fef9c3,
+      680px 260px #fbbf24, 880px 80px #fef9c3, 970px 340px #fbbf24;
+    animation: twinkle 5s ease-in-out 0.5s infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.3; }
+  }
+
+  /* 流星 */
+  .shooting-star {
+    position: absolute;
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.85) 50%,
+      #ffffff 100%
+    );
+    border-radius: 2px;
+    opacity: 0;
+    transform-origin: right center;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+  }
+  .shooting-star-1 {
+    top: 10%;
+    right: -15%;
+    animation: shooting 6s ease-in-out 2s infinite;
+  }
+  .shooting-star-2 {
+    top: 60%;
+    right: -15%;
+    animation: shooting 9s ease-in-out 5s infinite;
+  }
+
+  @keyframes shooting {
+    0% { transform: translateX(0) rotate(-24deg); opacity: 0; }
+    10% { opacity: 1; }
+    70% { opacity: 1; }
+    100% {
+      transform: translateX(-140vw) rotate(-24deg);
+      opacity: 0;
     }
-    
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+  }
+
+  /* 星云 */
+  .nebula {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+  }
+  .nebula-1 {
+    width: 520px;
+    height: 520px;
+    top: -120px;
+    right: -120px;
+    background: radial-gradient(
+      circle,
+      rgba(168, 85, 247, 0.55) 0%,
+      rgba(59, 130, 246, 0.25) 50%,
+      transparent 100%
+    );
+    animation: nebulaFloat 14s ease-in-out infinite;
+  }
+  .nebula-2 {
+    width: 420px;
+    height: 420px;
+    bottom: -100px;
+    left: -80px;
+    background: radial-gradient(
+      circle,
+      rgba(14, 165, 233, 0.45) 0%,
+      rgba(236, 72, 153, 0.2) 50%,
+      transparent 100%
+    );
+    animation: nebulaFloat 17s ease-in-out 2s infinite reverse;
+  }
+
+  @keyframes nebulaFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, -30px) scale(1.05); }
+  }
+
+  /* ========== 主要内容 ========== */
+  .not-found-content {
+    position: relative;
+    z-index: 2;
+    min-height: 560px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  .not-found-inner {
+    text-align: center;
+    max-width: 640px;
+  }
+
+  /* Hero 区 (4 0 4) */
+  .nf-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+    user-select: none;
+  }
+
+  .nf-digit {
+    font-size: clamp(6rem, 18vw, 11rem);
+    font-weight: 800;
+    line-height: 0.9;
+    color: #ffffff;
+    background: linear-gradient(180deg, #ffffff 0%, #c7d2fe 60%, #818cf8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 40px rgba(129, 140, 248, 0.35);
+    letter-spacing: -0.05em;
+  }
+  .nf-digit-left {
+    animation: digitFloat 5s ease-in-out infinite;
+  }
+  .nf-digit-right {
+    animation: digitFloat 5s ease-in-out 1s infinite reverse;
+  }
+
+  @keyframes digitFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  /* 星球 */
+  .nf-planet-wrap {
+    position: relative;
+    width: clamp(150px, 24vw, 220px);
+    height: clamp(150px, 24vw, 220px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nf-planet {
+    position: relative;
+    width: clamp(130px, 20vw, 180px);
+    height: clamp(130px, 20vw, 180px);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 28%, #ffedd5 0%, #fdba74 28%, #c2410c 65%, #7c2d12 100%);
+    box-shadow:
+      inset -20px -20px 50px rgba(0, 0, 0, 0.55),
+      0 0 60px rgba(251, 146, 60, 0.35),
+      0 0 120px rgba(251, 146, 60, 0.15);
+    animation: planetSpin 18s linear infinite;
+    overflow: hidden;
+  }
+
+  @keyframes planetSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .planet-craters {
+    position: absolute;
+    inset: 0;
+  }
+  .crater {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(124, 45, 18, 0.55);
+    box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.35);
+  }
+  .crater-1 { width: 18px; height: 18px; top: 30%; left: 22%; }
+  .crater-2 { width: 10px; height: 10px; top: 55%; left: 60%; }
+  .crater-3 { width: 14px; height: 14px; top: 70%; left: 30%; }
+  .crater-4 { width: 8px;  height: 8px;  top: 20%; left: 65%; }
+
+  .planet-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160%;
+    height: 28%;
+    transform: translate(-50%, -50%) rotate(-18deg);
+    border: 4px solid rgba(251, 191, 36, 0.35);
+    border-radius: 50%;
+    box-shadow:
+      inset 0 0 20px rgba(251, 191, 36, 0.25),
+      0 0 20px rgba(251, 191, 36, 0.15);
+  }
+
+  /* 宇航员：相对 planet-wrap 定位 */
+  .nf-astronaut {
+    position: absolute;
+    width: clamp(70px, 10vw, 95px);
+    right: -28px;
+    top: -20px;
+    animation: astronautDrift 6s ease-in-out infinite;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+    z-index: 3;
+  }
+  .nf-astronaut svg { width: 100%; height: auto; display: block; }
+
+  @keyframes astronautDrift {
+    0%, 100% { transform: translateY(0) rotate(-6deg); }
+    50% { transform: translateY(-14px) rotate(-12deg); }
+  }
+
+  /* 标题 / 描述 */
+  .nf-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .nf-desc {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 28rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* 按钮 */
+  .nf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .nf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.7rem 1.3rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+    text-decoration: none;
+  }
+
+  .nf-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    box-shadow:
+      0 8px 22px -6px rgba(139, 92, 246, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  .nf-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 30px -6px rgba(139, 92, 246, 0.7),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .nf-btn-ghost {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e5e7eb;
+    border-color: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .nf-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  /* 底部小字 */
+  .nf-footnote {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22d3ee;
+    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.6);
+    animation: pulseDot 1.6s ease-out infinite;
+  }
+
+  @keyframes pulseDot {
+    0%   { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.6); }
+    70%  { box-shadow: 0 0 0 10px rgba(34, 211, 238, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+  }
+
+  /* 响应式：小屏堆叠 */
+  @media (max-width: 560px) {
+    .nf-hero {
+      gap: 0.3rem;
     }
-    
-    /* 按钮悬停效果 */
-    a:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+    .nf-planet-wrap {
+      width: 120px;
+      height: 120px;
     }
+    .nf-planet {
+      width: 100px;
+      height: 100px;
+    }
+    .nf-astronaut {
+      width: 60px;
+      right: -18px;
+      top: -14px;
+    }
+  }
+
+  /* 用户偏好：减少动画 */
+  @media (prefers-reduced-motion: reduce) {
+    .nf-digit-left,
+    .nf-digit-right,
+    .nf-astronaut,
+    .nf-planet,
+    .shooting-star,
+    .nebula,
+    .stars::after {
+      animation: none !important;
+    }
+  }
 </style>

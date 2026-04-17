@@ -43,6 +43,7 @@
 	let failedCoverIds = new Set<string>();
 	let categoryDropdownOpen = false;
 	let dropdownRef: HTMLDivElement;
+	let mounted = false;
 
 	const params = new URLSearchParams(window.location.search);
 	tags = params.has("tag") ? params.getAll("tag") : tags;
@@ -95,6 +96,19 @@
 	function selectCategory(cat: string) {
 		selectedCategory = cat;
 		categoryDropdownOpen = false;
+		// 切换分类后：若当前选中的标签在新分类中不再存在，则清空
+		if (selectedTag) {
+			const postsInCategory = allPosts.filter(
+				(p) => cat === "all" || p.category === cat,
+			);
+			const tagsAvailable = new Set<string>();
+			for (const p of postsInCategory) {
+				for (const t of p.tags) tagsAvailable.add(t);
+			}
+			if (!tagsAvailable.has(selectedTag)) {
+				selectedTag = "";
+			}
+		}
 		applyClientFilters();
 	}
 
@@ -119,6 +133,24 @@
 	}
 
 	$: categoryLabel = selectedCategory === "all" ? "全部分类" : selectedCategory;
+
+	// 标签列表随当前选中分类动态变化：只展示该分类下文章中出现过的标签，按出现次数降序排列
+	$: tagOptions = (() => {
+		if (!mounted) return [] as string[];
+		const postsInCategory =
+			selectedCategory === "all"
+				? allPosts
+				: allPosts.filter((p) => p.category === selectedCategory);
+		const tagCount = new Map<string, number>();
+		for (const p of postsInCategory) {
+			for (const t of p.tags) {
+				tagCount.set(t, (tagCount.get(t) || 0) + 1);
+			}
+		}
+		return Array.from(tagCount.entries())
+			.sort((a, b) => b[1] - a[1])
+			.map(([name]) => name);
+	})();
 
 	onMount(() => {
 		document.addEventListener("click", handleClickOutside, true);
@@ -161,15 +193,8 @@
 		categoryOptions = Array.from(new Set(allPosts.map((p) => p.category))).sort((a, b) =>
 			a.localeCompare(b, "zh-CN"),
 		);
-		const tagCount = new Map<string, number>();
-		for (const p of allPosts) {
-			for (const t of p.tags) {
-				tagCount.set(t, (tagCount.get(t) || 0) + 1);
-			}
-		}
-		tagOptions = Array.from(tagCount.entries())
-			.sort((a, b) => b[1] - a[1])
-			.map(([name]) => name);
+		// 触发响应式 tagOptions 重新计算
+		mounted = true;
 		applyClientFilters();
 
 		return () => {

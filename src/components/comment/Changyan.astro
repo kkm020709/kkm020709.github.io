@@ -10,41 +10,36 @@ if (
 }
 
 const { appid, conf } = commentConfig.changyan;
-
-// Changyan 要求 sid 为当前页面的唯一标识，使用 pathname
 ---
 
-<div class="changyan-wrapper" data-changyan-ready="false">
-  {/* 加载骨架屏：Changyan widget 渲染完成前显示 */}
+{/* 预连接 Changyan CDN，缩短 DNS / TLS 握手时间，显著提升加载速度 */}
+<link rel="dns-prefetch" href="https://cy-cdn.kuaizhan.com" slot="head" />
+<link rel="preconnect" href="https://cy-cdn.kuaizhan.com" crossorigin slot="head" />
+<link rel="dns-prefetch" href="https://changyan.kuaizhan.com" slot="head" />
+<link rel="preconnect" href="https://changyan.kuaizhan.com" crossorigin slot="head" />
+
+<div class="changyan-wrapper" data-changyan-state="idle">
+  {/* 骨架屏：在脚本注入完成前先渲染，避免长时间空白 */}
   <div class="changyan-skeleton" aria-hidden="true">
-    <div class="skeleton-login">
-      <div class="skeleton-avatar"></div>
-      <div class="skeleton-input"></div>
-      <div class="skeleton-btn"></div>
+    <div class="changyan-skeleton-login">
+      <div class="cy-skel-avatar"></div>
+      <div class="cy-skel-input"></div>
+      <div class="cy-skel-btn"></div>
     </div>
-    <div class="skeleton-list">
-      <div class="skeleton-item">
-        <div class="skeleton-avatar-sm"></div>
-        <div class="skeleton-lines">
-          <div class="skeleton-line w-32"></div>
-          <div class="skeleton-line w-full"></div>
-          <div class="skeleton-line w-3/4"></div>
-        </div>
-      </div>
-      <div class="skeleton-item">
-        <div class="skeleton-avatar-sm"></div>
-        <div class="skeleton-lines">
-          <div class="skeleton-line w-24"></div>
-          <div class="skeleton-line w-5/6"></div>
-        </div>
+    <div class="changyan-skeleton-item">
+      <div class="cy-skel-avatar-sm"></div>
+      <div class="cy-skel-lines">
+        <div class="cy-skel-line w-32"></div>
+        <div class="cy-skel-line w-full"></div>
+        <div class="cy-skel-line w-3/4"></div>
       </div>
     </div>
-    <div class="skeleton-hint">
+    <div class="changyan-skeleton-hint">
       <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"></circle>
         <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
       </svg>
-      <span>正在加载畅言云评系统…</span>
+      <span>正在加载畅言云评…</span>
     </div>
   </div>
 
@@ -53,224 +48,233 @@ const { appid, conf } = commentConfig.changyan;
 </div>
 
 <script is:inline define:vars={{ appid, conf }}>
-  (function () {
-    var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < 1000) {
-      var head =
-        document.getElementsByTagName("head")[0] ||
-        document.head ||
-        document.documentElement;
-      var script = document.createElement("script");
-      script.type = "text/javascript";
-      script.charset = "utf-8";
-      script.id = "changyan_mobile_js";
-      script.src =
-        "https://cy-cdn.kuaizhan.com/upload/mobile/wap-js/changyan_mobile.js?client_id=" +
-        appid +
-        "&conf=" +
-        conf;
-      head.appendChild(script);
-    } else {
-      var loadJs = function (d, a) {
-        var c =
-          document.getElementsByTagName("head")[0] ||
-          document.head ||
-          document.documentElement;
-        var b = document.createElement("script");
-        b.setAttribute("type", "text/javascript");
-        b.setAttribute("charset", "UTF-8");
-        b.setAttribute("src", d);
-        if (typeof a === "function") {
-          if (window.attachEvent) {
-            b.onreadystatechange = function () {
-              var e = b.readyState;
-              if (e === "loaded" || e === "complete") {
-                b.onreadystatechange = null;
-                a();
-              }
-            };
-          } else {
-            b.onload = a;
-          }
-        }
-        c.appendChild(b);
-      };
-      loadJs("https://cy-cdn.kuaizhan.com/upload/changyan.js", function () {
-        if (window.changyan && window.changyan.api) {
-          window.changyan.api.config({ appid: appid, conf: conf });
-        }
-      });
-    }
-  })();
-</script>
-
-<script is:inline>
-  /* 监听 Changyan 渲染完成，隐藏骨架屏 */
+  /*
+   * Changyan 懒加载 + 首屏提速
+   * 1. 不在页面解析时立即拉取 changyan.js，而是通过 IntersectionObserver
+   *    在评论区接近视口时才加载，首屏 JS 体积 / 请求数降到最低。
+   * 2. 若浏览器不支持 IntersectionObserver 或加载后 4s 内评论未就绪，
+   *    自动降级为 requestIdleCallback / setTimeout 兜底。
+   * 3. 先检查 window.__CHANGYAN_LOADED 避免多个实例重复注入脚本。
+   */
   (function () {
     var wrapper = document.currentScript.parentElement.querySelector(
-      ".changyan-wrapper[data-changyan-ready='false']"
+      ".changyan-wrapper[data-changyan-state='idle']"
     );
     if (!wrapper) return;
     var sohucs = wrapper.querySelector("#SOHUCS");
     if (!sohucs) return;
 
-    var finished = false;
+    function markLoading() {
+      wrapper.setAttribute("data-changyan-state", "loading");
+    }
     function markReady() {
-      if (finished) return;
-      finished = true;
-      wrapper.setAttribute("data-changyan-ready", "true");
+      wrapper.setAttribute("data-changyan-state", "ready");
     }
 
-    var timer = setTimeout(markReady, 8000);
-
+    // 监听 Changyan 注入内容：一旦 #SOHUCS 出现子元素即视为就绪
     var observer = new MutationObserver(function () {
       if (sohucs.childElementCount > 0) {
-        clearTimeout(timer);
         markReady();
         observer.disconnect();
       }
     });
     try {
       observer.observe(sohucs, { childList: true, subtree: true });
-    } catch (_) {
-      /* noop */
+    } catch (_) {}
+
+    // 最长 10s 强制结束骨架屏
+    setTimeout(function () {
+      if (wrapper.getAttribute("data-changyan-state") !== "ready") {
+        markReady();
+        try { observer.disconnect(); } catch (_) {}
+      }
+    }, 10000);
+
+    function injectChangyan() {
+      if (window.__CHANGYAN_LOADED) return;
+      window.__CHANGYAN_LOADED = true;
+      markLoading();
+
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      var head =
+        document.getElementsByTagName("head")[0] ||
+        document.head ||
+        document.documentElement;
+
+      if (width < 1000) {
+        var mscript = document.createElement("script");
+        mscript.type = "text/javascript";
+        mscript.charset = "utf-8";
+        mscript.async = true;
+        mscript.id = "changyan_mobile_js";
+        mscript.src =
+          "https://cy-cdn.kuaizhan.com/upload/mobile/wap-js/changyan_mobile.js?client_id=" +
+          appid +
+          "&conf=" +
+          conf;
+        head.appendChild(mscript);
+      } else {
+        var loadJs = function (d, a) {
+          var b = document.createElement("script");
+          b.setAttribute("type", "text/javascript");
+          b.setAttribute("charset", "UTF-8");
+          b.setAttribute("src", d);
+          b.async = true;
+          if (typeof a === "function") {
+            if (window.attachEvent) {
+              b.onreadystatechange = function () {
+                var e = b.readyState;
+                if (e === "loaded" || e === "complete") {
+                  b.onreadystatechange = null;
+                  a();
+                }
+              };
+            } else {
+              b.onload = a;
+            }
+          }
+          head.appendChild(b);
+        };
+        loadJs("https://cy-cdn.kuaizhan.com/upload/changyan.js", function () {
+          if (window.changyan && window.changyan.api) {
+            window.changyan.api.config({ appid: appid, conf: conf });
+          }
+        });
+      }
+    }
+
+    // 使用 IntersectionObserver 在评论区即将进入视口时再加载
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(
+        function (entries) {
+          for (var i = 0; i < entries.length; i++) {
+            if (entries[i].isIntersecting) {
+              injectChangyan();
+              io.disconnect();
+              break;
+            }
+          }
+        },
+        { rootMargin: "400px 0px" }
+      );
+      io.observe(wrapper);
+
+      // 兜底：6s 后仍未进入视口（例如页面短于视口），强制加载
+      setTimeout(function () {
+        if (!window.__CHANGYAN_LOADED) injectChangyan();
+      }, 6000);
+    } else {
+      // 不支持 IO 的老浏览器：空闲时加载
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(injectChangyan, { timeout: 2000 });
+      } else {
+        setTimeout(injectChangyan, 800);
+      }
     }
   })();
 </script>
 
 <style is:global>
-  /* ============================================================
-     畅言云评 (Changyan) —— UI 与网页风格深度一致
-     覆盖 #SOHUCS 内由 Changyan 注入的默认样式
-     ============================================================ */
+  /* =============================================================
+     畅言云评 —— 使用官方默认样式；仅做最小必要调整：
+     1) 登录弹窗居中、遮罩全屏、层级置顶（修复弹窗被截断的问题）
+     2) 隐藏官方广告/新闻推荐条
+     3) 加载骨架屏（显著优化首屏观感）
+     ============================================================= */
 
   .changyan-wrapper {
-    min-height: 220px;
     position: relative;
+    min-height: 200px;
   }
 
   /* ---------- 骨架屏 ---------- */
   .changyan-skeleton {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    padding: 0.25rem 0 0.75rem;
+    gap: 1rem;
+    padding: 0.5rem 0 0.75rem;
   }
-  .changyan-wrapper[data-changyan-ready="true"] .changyan-skeleton {
+  .changyan-wrapper[data-changyan-state="ready"] .changyan-skeleton {
     display: none;
   }
-  .changyan-wrapper[data-changyan-ready="false"] #SOHUCS {
+  .changyan-wrapper[data-changyan-state="ready"] #SOHUCS {
+    opacity: 1;
+    transition: opacity 0.35s ease;
+  }
+  .changyan-wrapper[data-changyan-state="idle"] #SOHUCS,
+  .changyan-wrapper[data-changyan-state="loading"] #SOHUCS {
     opacity: 0;
     pointer-events: none;
     height: 0;
     overflow: hidden;
   }
-  .changyan-wrapper[data-changyan-ready="true"] #SOHUCS {
-    opacity: 1;
-    height: auto;
-    transition: opacity 0.35s ease;
-  }
 
-  .changyan-skeleton .skeleton-login {
+  .changyan-skeleton-login {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 1rem;
+    padding: 0.85rem 1rem;
     border: 1px solid var(--line-divider);
     background: var(--card-bg);
     border-radius: 0.75rem;
   }
-  .changyan-skeleton .skeleton-avatar {
-    width: 40px;
-    height: 40px;
+  .cy-skel-avatar,
+  .cy-skel-avatar-sm {
     border-radius: 9999px;
     background: var(--btn-regular-bg);
     flex-shrink: 0;
     animation: changyan-pulse 1.6s ease-in-out infinite;
   }
-  .changyan-skeleton .skeleton-avatar-sm {
-    width: 32px;
-    height: 32px;
-    border-radius: 9999px;
-    background: var(--btn-regular-bg);
-    flex-shrink: 0;
-    animation: changyan-pulse 1.6s ease-in-out infinite;
-  }
-  .changyan-skeleton .skeleton-input {
+  .cy-skel-avatar { width: 40px; height: 40px; }
+  .cy-skel-avatar-sm { width: 32px; height: 32px; }
+  .cy-skel-input {
     flex: 1;
     height: 40px;
     border-radius: 0.5rem;
     background: var(--btn-regular-bg);
     animation: changyan-pulse 1.6s ease-in-out infinite;
   }
-  .changyan-skeleton .skeleton-btn {
+  .cy-skel-btn {
     width: 80px;
     height: 40px;
     border-radius: 0.5rem;
-    background: color-mix(in srgb, var(--primary) 30%, var(--btn-regular-bg));
+    background: color-mix(in srgb, var(--primary) 28%, var(--btn-regular-bg));
     animation: changyan-pulse 1.6s ease-in-out infinite;
   }
-  .changyan-skeleton .skeleton-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .changyan-skeleton .skeleton-item {
+  .changyan-skeleton-item {
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
     padding: 0.75rem 0;
     border-bottom: 1px solid var(--line-divider);
   }
-  .changyan-skeleton .skeleton-lines {
+  .cy-skel-lines {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
-  .changyan-skeleton .skeleton-line {
-    height: 0.75rem;
+  .cy-skel-line {
+    height: 0.7rem;
     border-radius: 0.25rem;
     background: var(--btn-regular-bg);
     animation: changyan-pulse 1.6s ease-in-out infinite;
   }
-  .changyan-skeleton .skeleton-hint {
+  .changyan-skeleton-hint {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.5rem 0;
     color: var(--content-meta);
     font-size: 0.85rem;
+    padding: 0.25rem 0;
   }
   @keyframes changyan-pulse {
     0%, 100% { opacity: 0.55; }
     50% { opacity: 1; }
   }
 
-  /* ---------- #SOHUCS 根容器：字体/背景透明化 ---------- */
-  #SOHUCS {
-    background: transparent !important;
-    color: var(--btn-content) !important;
-    font-family: inherit !important;
-    font-size: 14px !important;
-  }
-
-  #SOHUCS * {
-    font-family: inherit !important;
-    box-sizing: border-box !important;
-  }
-
-  #SOHUCS a {
-    color: var(--primary) !important;
-    transition: opacity 0.2s ease !important;
-  }
-  #SOHUCS a:hover {
-    opacity: 0.8 !important;
-    text-decoration: underline !important;
-  }
-
-  /* ---------- 隐藏官方广告/推荐条 ---------- */
+  /* ---------- 隐藏官方广告 / 推荐 ---------- */
   #SOHUCS .section-service-w,
   #SOHUCS .section-newslist-w,
   #SOHUCS .news-list-dw,
@@ -281,486 +285,89 @@ const { appid, conf } = commentConfig.changyan;
   #SOHUCS .cy-ad {
     display: none !important;
     height: 0 !important;
-    overflow: hidden !important;
   }
 
-  /* ---------- 顶部标题/统计栏 ---------- */
-  #SOHUCS .section-title-w,
-  #SOHUCS .module-title-dw {
-    background: transparent !important;
-    color: var(--btn-content) !important;
-    border: none !important;
-    padding: 0 !important;
-    margin-bottom: 1rem !important;
-    font-weight: 600 !important;
-  }
-
-  #SOHUCS .section-hotcoms-w .title-dw,
-  #SOHUCS .section-latest-w .title-dw {
-    color: var(--btn-content) !important;
-    font-weight: 600 !important;
-    border-left: 3px solid var(--primary) !important;
-    padding-left: 0.75rem !important;
-    margin-bottom: 0.75rem !important;
-    background: transparent !important;
-  }
-
-  /* ---------- 登录 / 发布框 ---------- */
-  #SOHUCS .section-login-w,
-  #SOHUCS .section-publishbox-w,
-  #SOHUCS .module-publishbox-dw {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 0.75rem !important;
-    padding: 1rem !important;
-    margin-bottom: 1rem !important;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
-  }
-
-  #SOHUCS .section-publishbox-w:focus-within,
-  #SOHUCS .module-publishbox-dw:focus-within {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent) !important;
-  }
-
-  /* 登录入口头像/提示 */
-  #SOHUCS .user-pic-dw,
-  #SOHUCS .user-avatar-dw {
-    border-radius: 9999px !important;
-    border: 2px solid var(--line-divider) !important;
-    overflow: hidden !important;
-  }
-
-  #SOHUCS .tips-login-dw,
-  #SOHUCS .login-tips-dw {
-    color: var(--content-meta) !important;
-  }
-
-  /* ---------- 文本域 ---------- */
-  #SOHUCS textarea,
-  #SOHUCS .pub-textarea-dw,
-  #SOHUCS .module-textarea-dw,
-  #SOHUCS .pubbox-textarea-w {
-    background: var(--card-bg) !important;
-    color: var(--btn-content) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 0.5rem !important;
-    padding: 0.75rem 0.9rem !important;
-    font-family: inherit !important;
-    min-height: 100px !important;
-    resize: vertical !important;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-  }
-
-  #SOHUCS textarea:focus,
-  #SOHUCS .pub-textarea-dw:focus,
-  #SOHUCS .module-textarea-dw:focus,
-  #SOHUCS .pubbox-textarea-w:focus {
-    outline: none !important;
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent) !important;
-  }
-
-  #SOHUCS textarea::placeholder {
-    color: var(--content-meta) !important;
-    opacity: 0.7 !important;
-  }
-
-  /* 单行输入（昵称、邮箱、验证码等） */
-  #SOHUCS input[type="text"],
-  #SOHUCS input[type="email"],
-  #SOHUCS input[type="password"] {
-    background: var(--card-bg) !important;
-    color: var(--btn-content) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 0.5rem !important;
-    padding: 0.5rem 0.75rem !important;
-    height: 38px !important;
-    font-family: inherit !important;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-  }
-  #SOHUCS input[type="text"]:focus,
-  #SOHUCS input[type="email"]:focus,
-  #SOHUCS input[type="password"]:focus {
-    outline: none !important;
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent) !important;
-  }
-  #SOHUCS input::placeholder {
-    color: var(--content-meta) !important;
-    opacity: 0.7 !important;
-  }
-
-  /* ---------- 工具栏（表情、图片、@等）—— 置于文本域下方 ---------- */
-  #SOHUCS .pubbox-operate-w,
-  #SOHUCS .pubbox-tool-w,
-  #SOHUCS .section-tools-w,
-  #SOHUCS .module-pubbox-tool-dw {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-    align-items: center !important;
-    margin-top: 0.75rem !important;
-    padding-top: 0.75rem !important;
-    border-top: 1px dashed var(--line-divider) !important;
-    background: transparent !important;
-  }
-
-  #SOHUCS .pubbox-operate-w .tool-item,
-  #SOHUCS .pubbox-tool-w .tool-item,
-  #SOHUCS .section-tools-w .tool-item,
-  #SOHUCS .module-pubbox-tool-dw > * {
-    border-radius: 0.5rem !important;
-    padding: 0.35rem 0.6rem !important;
-    background: transparent !important;
-    color: var(--content-meta) !important;
-    border: 1px solid transparent !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
-  }
-  #SOHUCS .pubbox-operate-w .tool-item:hover,
-  #SOHUCS .pubbox-tool-w .tool-item:hover,
-  #SOHUCS .section-tools-w .tool-item:hover,
-  #SOHUCS .module-pubbox-tool-dw > *:hover {
-    background: var(--btn-regular-bg) !important;
-    color: var(--primary) !important;
-    border-color: var(--line-divider) !important;
-  }
-
-  /* ---------- 按钮（发布、取消、回复、登录） ---------- */
-  #SOHUCS button,
-  #SOHUCS .btn-dw,
-  #SOHUCS .module-btn-dw,
-  #SOHUCS .sub-btn-dw,
-  #SOHUCS .section-btn-w button,
-  #SOHUCS a.btn-dw {
-    background: var(--btn-regular-bg) !important;
-    color: var(--btn-content) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 0.5rem !important;
-    padding: 0.5rem 1.25rem !important;
-    height: auto !important;
-    line-height: 1.3 !important;
-    font-weight: 500 !important;
-    font-family: inherit !important;
-    cursor: pointer !important;
-    transition: all 0.25s ease !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-  }
-  #SOHUCS button:hover,
-  #SOHUCS .btn-dw:hover,
-  #SOHUCS .module-btn-dw:hover,
-  #SOHUCS .sub-btn-dw:hover,
-  #SOHUCS .section-btn-w button:hover,
-  #SOHUCS a.btn-dw:hover {
-    background: var(--btn-regular-bg-hover) !important;
-    border-color: var(--primary) !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--primary) 25%, transparent) !important;
-    text-decoration: none !important;
-  }
-  #SOHUCS button:active,
-  #SOHUCS .btn-dw:active {
-    transform: translateY(0) scale(0.98) !important;
-    background: var(--btn-regular-bg-active) !important;
-  }
-
-  /* 主按钮：发布评论 */
-  #SOHUCS .module-pubbtn-dw,
-  #SOHUCS .pub-btn-dw,
-  #SOHUCS .submit-dw,
-  #SOHUCS .sub-submit-dw,
-  #SOHUCS .btn-submit-dw,
-  #SOHUCS .pubbox-submit-w,
-  #SOHUCS .module-btn-dw.submit,
-  #SOHUCS .btn-primary-dw {
-    background: var(--primary) !important;
-    color: white !important;
-    border: 1px solid transparent !important;
-  }
-  #SOHUCS .module-pubbtn-dw:hover,
-  #SOHUCS .pub-btn-dw:hover,
-  #SOHUCS .submit-dw:hover,
-  #SOHUCS .sub-submit-dw:hover,
-  #SOHUCS .btn-submit-dw:hover,
-  #SOHUCS .pubbox-submit-w:hover,
-  #SOHUCS .module-btn-dw.submit:hover,
-  #SOHUCS .btn-primary-dw:hover {
-    background: color-mix(in srgb, var(--primary) 88%, black) !important;
-    color: white !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 16px -2px color-mix(in srgb, var(--primary) 40%, transparent) !important;
-  }
-
-  :global(html.dark) #SOHUCS .module-pubbtn-dw,
-  :global(html.dark) #SOHUCS .pub-btn-dw,
-  :global(html.dark) #SOHUCS .submit-dw,
-  :global(html.dark) #SOHUCS .sub-submit-dw,
-  :global(html.dark) #SOHUCS .btn-submit-dw {
-    color: var(--deep-text, #000) !important;
-  }
-
-  /* 发布按钮区 —— 右下对齐 */
-  #SOHUCS .pubbox-btn-w,
-  #SOHUCS .section-pubbtn-w,
-  #SOHUCS .module-pubbtn-wrapper-dw {
-    display: flex !important;
-    justify-content: flex-end !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    margin-top: 0.75rem !important;
-  }
-
-  /* ---------- 评论列表 ---------- */
-  #SOHUCS .section-hotcoms-w,
-  #SOHUCS .section-latest-w,
-  #SOHUCS .section-commentlist-w,
-  #SOHUCS .module-commentlist-dw {
-    background: transparent !important;
-    padding: 0 !important;
-    margin-bottom: 1rem !important;
-  }
-
-  #SOHUCS .module-comment-dw,
-  #SOHUCS .section-comment-dw,
-  #SOHUCS .comment-item-dw,
-  #SOHUCS .mod-media-dw {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 0.75rem !important;
-    padding: 1rem !important;
-    margin-bottom: 0.75rem !important;
-    transition: all 0.25s ease !important;
-  }
-
-  #SOHUCS .module-comment-dw:hover,
-  #SOHUCS .section-comment-dw:hover,
-  #SOHUCS .comment-item-dw:hover,
-  #SOHUCS .mod-media-dw:hover {
-    border-color: var(--primary) !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  /* 头像 */
-  #SOHUCS .mod-media-dw .media-left-dw img,
-  #SOHUCS .comment-pic-dw,
-  #SOHUCS .pic-user-dw img,
-  #SOHUCS .user-pic-dw img,
-  #SOHUCS img.avatar-dw {
-    border-radius: 9999px !important;
-    border: 2px solid var(--line-divider) !important;
-    width: 40px !important;
-    height: 40px !important;
-    object-fit: cover !important;
-  }
-
-  /* 昵称 */
-  #SOHUCS .nickname-dw,
-  #SOHUCS .name-user-dw,
-  #SOHUCS .media-heading-dw {
-    color: var(--primary) !important;
-    font-weight: 600 !important;
-  }
-
-  /* 时间 */
-  #SOHUCS .time-dw,
-  #SOHUCS .date-dw,
-  #SOHUCS .comment-time-dw {
-    color: var(--content-meta) !important;
-    font-size: 0.8rem !important;
-  }
-
-  /* 评论正文 */
-  #SOHUCS .comment-text-dw,
-  #SOHUCS .module-text-dw,
-  #SOHUCS .content-dw,
-  #SOHUCS .mod-body-dw {
-    color: var(--btn-content) !important;
-    line-height: 1.7 !important;
-    font-size: 0.95rem !important;
-  }
-
-  /* 楼层/引用 */
-  #SOHUCS .floor-dw {
-    color: var(--content-meta) !important;
-    font-size: 0.75rem !important;
-  }
-
-  #SOHUCS .reply-quote-dw,
-  #SOHUCS blockquote {
-    background: var(--btn-regular-bg) !important;
-    border-left: 3px solid var(--primary) !important;
-    padding: 0.5rem 0.75rem !important;
-    border-radius: 0.375rem !important;
-    margin: 0.5rem 0 !important;
-    color: var(--content-meta) !important;
-  }
-
-  /* ---------- 底部操作（点赞、回复、举报） ---------- */
-  #SOHUCS .section-handle-w,
-  #SOHUCS .module-handle-dw,
-  #SOHUCS .operation-dw,
-  #SOHUCS .mod-footer-dw {
-    display: flex !important;
-    gap: 0.75rem !important;
-    align-items: center !important;
-    margin-top: 0.5rem !important;
-    padding-top: 0.5rem !important;
-    border-top: 1px dashed var(--line-divider) !important;
-  }
-
-  #SOHUCS .section-handle-w > *,
-  #SOHUCS .module-handle-dw > *,
-  #SOHUCS .operation-dw > *,
-  #SOHUCS .mod-footer-dw > *,
-  #SOHUCS .handle-item-dw,
-  #SOHUCS .like-dw,
-  #SOHUCS .reply-dw,
-  #SOHUCS .report-dw {
-    color: var(--content-meta) !important;
-    font-size: 0.85rem !important;
-    padding: 0.25rem 0.5rem !important;
-    border-radius: 0.375rem !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    height: auto !important;
-  }
-
-  #SOHUCS .section-handle-w > *:hover,
-  #SOHUCS .module-handle-dw > *:hover,
-  #SOHUCS .operation-dw > *:hover,
-  #SOHUCS .mod-footer-dw > *:hover,
-  #SOHUCS .handle-item-dw:hover,
-  #SOHUCS .like-dw:hover,
-  #SOHUCS .reply-dw:hover,
-  #SOHUCS .report-dw:hover {
-    color: var(--primary) !important;
-    background: color-mix(in srgb, var(--primary) 10%, transparent) !important;
-    transform: none !important;
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  #SOHUCS .section-handle-w .praise-dw.on,
-  #SOHUCS .section-handle-w .praise-dw.active,
-  #SOHUCS .like-dw.active,
-  #SOHUCS .like-dw.on {
-    color: var(--primary) !important;
-    font-weight: 600 !important;
-  }
-
-  /* ---------- 分页 / 加载更多 ---------- */
-  #SOHUCS .section-page-w,
-  #SOHUCS .pager-dw,
-  #SOHUCS .loadmore-dw,
-  #SOHUCS .module-pagenav-dw {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 0.4rem !important;
-    margin-top: 1rem !important;
-    padding: 1rem 0 !important;
-    background: transparent !important;
-  }
-
-  #SOHUCS .section-page-w a,
-  #SOHUCS .pager-dw a,
-  #SOHUCS .module-pagenav-dw a {
-    background: var(--btn-regular-bg) !important;
-    color: var(--btn-content) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 0.375rem !important;
-    padding: 0.35rem 0.7rem !important;
-    font-size: 0.85rem !important;
-    transition: all 0.2s ease !important;
-  }
-  #SOHUCS .section-page-w a:hover,
-  #SOHUCS .pager-dw a:hover,
-  #SOHUCS .module-pagenav-dw a:hover {
-    background: var(--btn-regular-bg-hover) !important;
-    border-color: var(--primary) !important;
-    color: var(--primary) !important;
-    text-decoration: none !important;
-  }
-  #SOHUCS .section-page-w a.cur,
-  #SOHUCS .section-page-w a.active,
-  #SOHUCS .pager-dw a.cur,
-  #SOHUCS .module-pagenav-dw a.cur {
-    background: var(--primary) !important;
-    color: white !important;
-    border-color: transparent !important;
-  }
-
-  /* ---------- 登录弹窗 & 遮罩 ---------- */
-  #SOHUCS ~ .login-overlay-dw,
+  /* ---------- 登录弹窗定位修复（解决右侧被截断、层级混乱） ---------- */
+  /* 背后的遮罩：全屏固定 */
   .login-overlay-dw,
-  .mask-dw {
+  .mask-dw,
+  .cy-mask-dw,
+  .mask-login-dw,
+  .module-mask-dw {
     position: fixed !important;
-    inset: 0 !important;
-    background: rgba(0, 0, 0, 0.5) !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.55) !important;
     backdrop-filter: blur(2px) !important;
-    z-index: 10000 !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+    z-index: 99998 !important;
+    margin: 0 !important;
+    transform: none !important;
   }
 
+  /* 登录弹窗主体：屏幕正中、在视口内可见 */
   .user-login-wrapper-dw,
   .visitor-login-wrapper-dw,
   .module-login-dw,
-  .module-loginbox-dw {
+  .module-loginbox-dw,
+  .section-login-pop-w,
+  .login-pop-dw,
+  .cy-login-wrapper-dw,
+  .login-wrapper-dw {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    z-index: 99999 !important;
+    max-width: min(92vw, 420px) !important;
+    max-height: 90vh !important;
+    overflow: auto !important;
+    border-radius: 12px !important;
+    box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  /* 有时 Changyan 会把弹窗放在 #SOHUCS 内部（相对定位），强制脱离 */
+  #SOHUCS .user-login-wrapper-dw,
+  #SOHUCS .visitor-login-wrapper-dw,
+  #SOHUCS .module-login-dw,
+  #SOHUCS .module-loginbox-dw,
+  #SOHUCS .section-login-pop-w,
+  #SOHUCS .login-pop-dw,
+  #SOHUCS .cy-login-wrapper-dw,
+  #SOHUCS .login-wrapper-dw {
     position: fixed !important;
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
-    z-index: 10001 !important;
-    background: var(--card-bg) !important;
-    color: var(--btn-content) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 14px !important;
-    padding: 1.5rem !important;
-    box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.35) !important;
-    max-width: 92vw !important;
   }
 
-  .user-login-wrapper-dw input,
-  .visitor-login-wrapper-dw input,
-  .module-login-dw input,
-  .module-loginbox-dw input {
-    background: var(--card-bg) !important;
-    color: var(--btn-content) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 0.5rem !important;
-    padding: 0.5rem 0.75rem !important;
+  /* 弹窗内关闭按钮保持可点击 */
+  .user-login-wrapper-dw .close-dw,
+  .visitor-login-wrapper-dw .close-dw,
+  .module-login-dw .close-dw,
+  .module-loginbox-dw .close-dw {
+    z-index: 100000 !important;
   }
 
-  /* ---------- 表情弹窗 ---------- */
-  .emotion-wrapper-dw,
-  .module-emotion-dw,
-  .pubbox-emotion-w {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--line-divider) !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 10px 30px -6px rgba(0, 0, 0, 0.2) !important;
-    padding: 0.5rem !important;
-  }
-
-  /* ---------- 通用 placeholder / 颜色覆盖 ---------- */
-  #SOHUCS .text-gray-dw,
-  #SOHUCS .gray-dw,
-  #SOHUCS .tips-dw {
-    color: var(--content-meta) !important;
-  }
-
-  /* ---------- 暗色模式微调 ---------- */
-  :global(html.dark) #SOHUCS {
-    color: var(--btn-content) !important;
-  }
-  :global(html.dark) #SOHUCS .module-comment-dw,
-  :global(html.dark) #SOHUCS .section-comment-dw,
-  :global(html.dark) #SOHUCS .comment-item-dw,
-  :global(html.dark) #SOHUCS .mod-media-dw {
-    background: color-mix(in srgb, var(--card-bg) 96%, white) !important;
+  /* 移动端弹窗适配 */
+  @media (max-width: 640px) {
+    .user-login-wrapper-dw,
+    .visitor-login-wrapper-dw,
+    .module-login-dw,
+    .module-loginbox-dw,
+    .section-login-pop-w,
+    .login-pop-dw,
+    .cy-login-wrapper-dw,
+    .login-wrapper-dw {
+      max-width: 94vw !important;
+      width: 94vw !important;
+    }
   }
 </style>
