@@ -68,11 +68,17 @@ let commentService: string = commentConfig?.type || "none";
             </div>
           </div>
 
-          {/* 右侧提示胶囊：Powered by 来必力 */}
+          {/* 右侧提示胶囊：当前评论服务 */}
           {commentService === "livere" && (
             <div class="comment-provider-pill" title="Powered by Livere">
               <span class="comment-dot" aria-hidden="true"></span>
               <span class="text-xs font-medium">Powered by 来必力</span>
+            </div>
+          )}
+          {commentService === "changyan" && (
+            <div class="comment-provider-pill" title="Powered by Changyan">
+              <span class="comment-dot" aria-hidden="true"></span>
+              <span class="text-xs font-medium">Powered by 畅言云评</span>
             </div>
           )}
         </div>

@@ -2,7 +2,7 @@ import type { CommentConfig } from "../types/config";
 
 export const commentConfig: CommentConfig = {
 	// 评论系统类型: none, twikoo, waline, giscus, disqus, artalk, livere, changyan
-	type: "livere",
+	type: "changyan",
 
 	//twikoo评论系统配置
 	twikoo: {
