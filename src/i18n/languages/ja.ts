@@ -221,6 +221,10 @@ export const ja: Translation = {
 	[Key.siteStatsLastUpdate]: "最終活動",
 	[Key.siteStatsDaysAgo]: "{days} 日前",
 	[Key.siteStatsDays]: "{days} 日",
+	[Key.siteStatsUnitDay]: "日",
+	[Key.siteStatsUnitHour]: "時",
+	[Key.siteStatsUnitMinute]: "分",
+	[Key.siteStatsUnitSecond]: "秒",
 	[Key.today]: "今日",
 
 	// カレンダーコンポーネント
