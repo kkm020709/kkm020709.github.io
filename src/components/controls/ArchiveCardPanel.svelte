@@ -36,14 +36,12 @@
 	let allPosts: RenderPost[] = [];
 	let filteredPosts: RenderPost[] = [];
 	let categoryOptions: string[] = [];
-	let tagOptions: string[] = [];
 	let selectedCategory = "all";
 	let selectedTag = "";
 	let keyword = "";
 	let failedCoverIds = new Set<string>();
 	let categoryDropdownOpen = false;
 	let dropdownRef: HTMLDivElement;
-	let mounted = false;
 
 	const params = new URLSearchParams(window.location.search);
 	tags = params.has("tag") ? params.getAll("tag") : tags;
@@ -134,13 +132,16 @@
 
 	$: categoryLabel = selectedCategory === "all" ? "全部分类" : selectedCategory;
 
-	// 标签列表随当前选中分类动态变化：只展示该分类下文章中出现过的标签，按出现次数降序排列
-	$: tagOptions = (() => {
-		if (!mounted) return [] as string[];
+	/**
+	 * 根据当前分类派生可选标签：
+	 *  - 默认（全部分类）：返回所有文章涉及的标签
+	 *  - 选中某分类：仅返回该分类下文章出现过的标签
+	 * 按标签出现次数降序排列。
+	 */
+	function buildTagOptions(posts: RenderPost[], cat: string): string[] {
+		if (!posts || posts.length === 0) return [];
 		const postsInCategory =
-			selectedCategory === "all"
-				? allPosts
-				: allPosts.filter((p) => p.category === selectedCategory);
+			cat === "all" ? posts : posts.filter((p) => p.category === cat);
 		const tagCount = new Map<string, number>();
 		for (const p of postsInCategory) {
 			for (const t of p.tags) {
@@ -150,7 +151,9 @@
 		return Array.from(tagCount.entries())
 			.sort((a, b) => b[1] - a[1])
 			.map(([name]) => name);
-	})();
+	}
+
+	$: tagOptions = buildTagOptions(allPosts, selectedCategory);
 
 	onMount(() => {
 		document.addEventListener("click", handleClickOutside, true);
@@ -193,8 +196,6 @@
 		categoryOptions = Array.from(new Set(allPosts.map((p) => p.category))).sort((a, b) =>
 			a.localeCompare(b, "zh-CN"),
 		);
-		// 触发响应式 tagOptions 重新计算
-		mounted = true;
 		applyClientFilters();
 
 		return () => {
