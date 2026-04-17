@@ -3,6 +3,8 @@
 	import { getPostUrlBySlug } from "@/utils/url-utils";
 	import { processCoverImageSync } from "@/utils/image-utils";
 
+	export let panelTitle = "归档";
+	export let enableFilters = true;
 	export let tags: string[] = [];
 	export let categories: string[] = [];
 	export let sortedPosts: Post[] = [];
@@ -25,15 +27,21 @@
 		description: string;
 		publishedText: string;
 		tags: string[];
+		category: string;
 		url: string;
 		coverUrl: string;
-		hasCover: boolean;
+		requestedCover: boolean;
 	}
 
+	let allPosts: RenderPost[] = [];
 	let filteredPosts: RenderPost[] = [];
+	let categoryOptions: string[] = [];
+	let selectedCategory = "all";
+	let keyword = "";
+	let failedCoverIds = new Set<string>();
 	const params = new URLSearchParams(window.location.search);
-	tags = params.has("tag") ? params.getAll("tag") : [];
-	categories = params.has("category") ? params.getAll("category") : [];
+	tags = params.has("tag") ? params.getAll("tag") : tags;
+	categories = params.has("category") ? params.getAll("category") : categories;
 	const uncategorized = params.get("uncategorized");
 
 	function toDate(value: Date | string) {
@@ -55,7 +63,32 @@
 		if (raw.startsWith("http://") || raw.startsWith("https://") || raw.startsWith("/")) {
 			return raw;
 		}
-		return `/${raw.replace(/^\.?\//, "")}`;
+		return "";
+	}
+
+	function normalizeCategory(value?: string | null) {
+		const text = (value || "").trim();
+		return text.length > 0 ? text : "未分类";
+	}
+
+	function applyClientFilters() {
+		const keywordText = keyword.trim().toLowerCase();
+		filteredPosts = allPosts.filter((post) => {
+			const matchedCategory = selectedCategory === "all" || post.category === selectedCategory;
+			if (!matchedCategory) return false;
+			if (!keywordText) return true;
+			const tagText = post.tags.join(" ").toLowerCase();
+			return (
+				post.title.toLowerCase().includes(keywordText) ||
+				post.description.toLowerCase().includes(keywordText) ||
+				tagText.includes(keywordText)
+			);
+		});
+	}
+
+	function handleCoverError(postId: string) {
+		if (failedCoverIds.has(postId)) return;
+		failedCoverIds = new Set([...failedCoverIds, postId]);
 	}
 
 	onMount(() => {
@@ -78,7 +111,7 @@
 			localPosts = localPosts.filter((post) => !post.data.category);
 		}
 
-		filteredPosts = localPosts
+		allPosts = localPosts
 			.sort((a, b) => toDate(b.data.published).getTime() - toDate(a.data.published).getTime())
 			.map((post) => {
 				const coverUrl = normalizeCover(post.data.image, post.id);
@@ -88,27 +121,60 @@
 					description: (post.data.description || "").trim(),
 					publishedText: formatDate(post.data.published),
 					tags: post.data.tags || [],
+					category: normalizeCategory(post.data.category),
 					url: getPostUrlBySlug(post.id),
 					coverUrl,
-					hasCover: coverUrl.length > 0,
+					requestedCover: coverUrl.length > 0,
 				};
 			});
+		categoryOptions = Array.from(new Set(allPosts.map((post) => post.category))).sort((a, b) =>
+			a.localeCompare(b, "zh-CN"),
+		);
+		applyClientFilters();
 	});
 </script>
 
 <section class="archive-grid-shell card-base px-5 py-5 md:px-6 md:py-6">
 	<div class="archive-grid-header">
-		<h2>归档</h2>
+		<h2>{panelTitle}</h2>
 		<p>{filteredPosts.length} 篇文章</p>
 	</div>
+
+	{#if enableFilters}
+		<div class="archive-filter-bar">
+			<input
+				type="search"
+				placeholder="搜索文章标题、摘要或标签..."
+				bind:value={keyword}
+				on:input={applyClientFilters}
+				aria-label="搜索文章"
+			/>
+			<select bind:value={selectedCategory} on:change={applyClientFilters} aria-label="按分类筛选">
+				<option value="all">全部分类</option>
+				{#each categoryOptions as category}
+					<option value={category}>{category}</option>
+				{/each}
+			</select>
+		</div>
+	{/if}
 
 	{#if filteredPosts.length > 0}
 		<div class="archive-grid">
 			{#each filteredPosts as post}
-				<a href={post.url} class="archive-card {post.hasCover ? 'has-cover' : 'no-cover'}" aria-label={post.title}>
-					{#if post.hasCover}
+				{@const showCover = post.requestedCover && !failedCoverIds.has(post.id)}
+				<a
+					href={post.url}
+					class="archive-card {showCover ? 'has-cover' : post.requestedCover ? 'is-fallback' : 'no-cover'}"
+					aria-label={post.title}
+				>
+					{#if showCover}
 						<div class="archive-card-cover">
-							<img src={post.coverUrl} alt={post.title} loading="lazy" />
+							<img
+								src={post.coverUrl}
+								alt={post.title}
+								loading="lazy"
+								on:error={() => handleCoverError(post.id)}
+							/>
 							<div class="archive-card-mask"></div>
 						</div>
 					{/if}
@@ -152,6 +218,34 @@
 		opacity: 0.72;
 	}
 
+	.archive-filter-bar {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.6rem;
+	}
+
+	@media (min-width: 900px) {
+		.archive-filter-bar {
+			grid-template-columns: 1fr 14rem;
+		}
+	}
+
+	.archive-filter-bar input,
+	.archive-filter-bar select {
+		height: 2.5rem;
+		border-radius: 0.75rem;
+		border: 1px solid var(--line-divider);
+		background: var(--btn-regular-bg);
+		padding: 0 0.85rem;
+		outline: none;
+		font-size: 0.9rem;
+	}
+
+	.archive-filter-bar input:focus,
+	.archive-filter-bar select:focus {
+		border-color: var(--primary);
+	}
+
 	.archive-grid {
 		display: grid;
 		grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -183,6 +277,10 @@
 		min-height: 286px;
 	}
 
+	.archive-card.is-fallback {
+		min-height: 286px;
+	}
+
 	.archive-card.no-cover {
 		min-height: 145px;
 	}
@@ -209,6 +307,11 @@
 		padding: 0.85rem 0.95rem 0.95rem;
 		display: grid;
 		gap: 0.5rem;
+	}
+
+	.archive-card.is-fallback .archive-card-content {
+		min-height: 286px;
+		align-content: center;
 	}
 
 	.archive-card-date {
