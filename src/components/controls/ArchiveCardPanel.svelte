@@ -284,17 +284,20 @@
 	.archive-grid-shell {
 		display: grid;
 		gap: 1rem;
+		color: var(--text-color, inherit);
 	}
 
 	.archive-grid-header h2 {
 		font-size: 1.45rem;
 		font-weight: 700;
 		line-height: 1.2;
+		color: var(--btn-content);
 	}
 
 	.archive-grid-header p {
 		margin-top: 0.35rem;
 		font-size: 0.88rem;
+		color: var(--btn-content);
 		opacity: 0.72;
 	}
 
@@ -315,16 +318,21 @@
 		border-radius: 0.75rem;
 		border: 1px solid var(--line-divider);
 		background: var(--btn-regular-bg);
+		color: var(--btn-content);
 		padding: 0 0.85rem;
 		outline: none;
 		font-size: 0.9rem;
+	}
+
+	.archive-filter-bar input::placeholder {
+		color: var(--btn-content);
+		opacity: 0.5;
 	}
 
 	.archive-filter-bar input:focus {
 		border-color: var(--primary);
 	}
 
-	/* Custom category dropdown */
 	.category-dropdown {
 		position: relative;
 	}
@@ -382,6 +390,10 @@
 		max-height: 16rem;
 		overflow-y: auto;
 		animation: dropdownFadeIn 0.15s ease;
+	}
+
+	:global(.dark) .category-panel {
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 	}
 
 	@keyframes dropdownFadeIn {
@@ -520,6 +532,7 @@
 
 	.archive-card-date {
 		font-size: 0.74rem;
+		color: var(--btn-content);
 		opacity: 0.68;
 	}
 
@@ -536,6 +549,7 @@
 
 	.archive-card p {
 		font-size: 0.84rem;
+		color: var(--btn-content);
 		opacity: 0.75;
 		line-height: 1.4;
 		display: -webkit-box;
@@ -556,6 +570,7 @@
 		padding: 0.12rem 0.42rem;
 		border-radius: 999px;
 		background: var(--btn-regular-bg);
+		color: var(--btn-content);
 		opacity: 0.82;
 	}
 
@@ -565,6 +580,7 @@
 		background: var(--btn-regular-bg);
 		border: 1px dashed var(--line-divider);
 		font-size: 0.9rem;
+		color: var(--btn-content);
 		opacity: 0.78;
 	}
 </style>
