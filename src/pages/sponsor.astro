@@ -1,4 +1,7 @@
 ---
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import { Icon } from "astro-icon/components";
 import { siteConfig, sponsorConfig } from "@/config";
 import I18nKey from "@/i18n/i18nKey";
@@ -17,6 +20,29 @@ const description =
 const enabledMethods = sponsorConfig.methods.filter((method) => method.enabled);
 const sponsors = sponsorConfig.sponsors || [];
 const showSponsorsList = sponsorConfig.showSponsorsList !== false;
+
+/**
+ * 给 public/ 下的静态资源路径追加基于文件内容的版本号，
+ * 当图片被替换但文件名不变时，浏览器依然会拉取到最新内容（破除缓存）。
+ * 如果读取失败（例如在 dev 环境下文件尚未存在），会回退到原始路径。
+ */
+function bustPublicAsset(publicPath: string): string {
+	if (!publicPath || /^(https?:)?\/\//.test(publicPath)) return publicPath;
+	try {
+		const rel = publicPath.replace(/^\//, "");
+		const abs = path.join(process.cwd(), "public", rel);
+		const buf = fs.readFileSync(abs);
+		const hash = crypto
+			.createHash("md5")
+			.update(buf)
+			.digest("hex")
+			.slice(0, 10);
+		const sep = publicPath.includes("?") ? "&" : "?";
+		return `${publicPath}${sep}v=${hash}`;
+	} catch {
+		return publicPath;
+	}
+}
 ---
 
 <MainGridLayout title={title} description={description}>
@@ -76,10 +102,11 @@ const showSponsorsList = sponsorConfig.showSponsorsList !== false;
                         {method.qrCode && (
                           <div class="relative w-full max-w-[200px] aspect-square bg-white rounded-lg p-4 shadow-md mb-4">
                             <img
-                              src={url(method.qrCode)}
+                              src={url(bustPublicAsset(method.qrCode))}
                               alt={`${method.name} ${i18n(I18nKey.scanToSponsor)}`}
                               class="w-full h-full object-contain"
                               loading="lazy"
+                              decoding="async"
                             />
                           </div>
                         )}

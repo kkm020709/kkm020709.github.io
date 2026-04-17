@@ -86,8 +86,8 @@ const stats = [
 	{
 		icon: "material-symbols:calendar-clock-outline",
 		label: i18n(I18nKey.siteStatsRunningDays),
-		value: "—", // 将由客户端更新（精确到秒）
-		suffix: "",
+		value: 0, // 将由客户端更新
+		suffix: i18n(I18nKey.siteStatsDays).replace("{days}", ""),
 		dynamic: true,
 		id: "running-days",
 	},
@@ -116,10 +116,10 @@ const stats = [
         </div>
         <div class="flex items-center">
           <span 
-            class="text-base font-bold text-neutral-900 dark:text-neutral-100 tabular-nums"
+            class="text-base font-bold text-neutral-900 dark:text-neutral-100"
             data-stat-id={stat.id}
           >
-            {stat.formatted && typeof stat.value === "number" ? formatNumber(stat.value) : stat.value}
+            {stat.formatted ? formatNumber(stat.value) : stat.value}
           </span>
           {stat.suffix && (
             <span class="text-sm text-neutral-500 dark:text-neutral-400 ml-1">
@@ -132,101 +132,48 @@ const stats = [
   </div>
 </WidgetLayout>
 
-<script is:inline define:vars={{
-  siteStartDate,
-  lastPostDate,
-  todayText,
-  runtimeUnits: {
-    day: i18n(I18nKey.siteStatsUnitDay),
-    hour: i18n(I18nKey.siteStatsUnitHour),
-    minute: i18n(I18nKey.siteStatsUnitMinute),
-    second: i18n(I18nKey.siteStatsUnitSecond),
-  },
-}}>
-  const __siteStartTs = new Date(siteStartDate).getTime();
-
-  function pad2(n) {
-    return n < 10 ? "0" + n : "" + n;
-  }
-
-  function formatRunningTime(nowMs) {
-    let totalSeconds = Math.max(0, Math.floor((nowMs - __siteStartTs) / 1000));
-    const days = Math.floor(totalSeconds / 86400);
-    totalSeconds -= days * 86400;
-    const hours = Math.floor(totalSeconds / 3600);
-    totalSeconds -= hours * 3600;
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds - minutes * 60;
-    return (
-      days + runtimeUnits.day + " " +
-      pad2(hours) + runtimeUnits.hour + " " +
-      pad2(minutes) + runtimeUnits.minute + " " +
-      pad2(seconds) + runtimeUnits.second
-    );
-  }
-
-  function updateRunningTime() {
-    const text = formatRunningTime(Date.now());
-    const elements = document.querySelectorAll('[data-stat-id="running-days"]');
-    elements.forEach((element) => {
-      element.textContent = text;
-    });
-  }
-
-  function updateLastUpdate() {
-    if (!lastPostDate) return;
+<script is:inline define:vars={{ siteStartDate, lastPostDate, todayText }}>
+  function updateDynamicStats() {
     const today = new Date();
-    const lastPost = new Date(lastPostDate);
-    const timeSinceLastPost = Math.abs(today.getTime() - lastPost.getTime());
-    const daysSinceLastUpdate = Math.floor(timeSinceLastPost / (1000 * 60 * 60 * 24));
 
-    const lastUpdateElements = document.querySelectorAll('[data-stat-id="last-update"]');
-    lastUpdateElements.forEach((element) => {
-      if (daysSinceLastUpdate === 0) {
-        element.textContent = todayText;
-        if (element.nextElementSibling) {
-          element.nextElementSibling.style.display = 'none';
-        }
-      } else {
-        element.textContent = daysSinceLastUpdate.toString();
-        if (element.nextElementSibling) {
-          element.nextElementSibling.style.display = '';
-        }
-      }
+    // 更新运行天数
+    const startDate = new Date(siteStartDate);
+    const diffTime = Math.abs(today.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    const runningDaysElements = document.querySelectorAll('[data-stat-id="running-days"]');
+    runningDaysElements.forEach((element) => {
+      element.textContent = diffDays.toString();
     });
-  }
 
-  // 维护一个全局的 setInterval 句柄，防止重复叠加
-  if (window.__siteStatsRuntimeTimer) {
-    clearInterval(window.__siteStatsRuntimeTimer);
-    window.__siteStatsRuntimeTimer = null;
-  }
+    // 更新最后活动时间
+    if (lastPostDate) {
+      const lastPost = new Date(lastPostDate);
+      const timeSinceLastPost = Math.abs(today.getTime() - lastPost.getTime());
+      const daysSinceLastUpdate = Math.floor(timeSinceLastPost / (1000 * 60 * 60 * 24));
 
-  function startRuntimeTick() {
-    updateRunningTime();
-    updateLastUpdate();
-    if (window.__siteStatsRuntimeTimer) {
-      clearInterval(window.__siteStatsRuntimeTimer);
+      const lastUpdateElements = document.querySelectorAll('[data-stat-id="last-update"]');
+      lastUpdateElements.forEach((element) => {
+        if (daysSinceLastUpdate === 0) {
+          element.textContent = todayText;
+          if (element.nextElementSibling) {
+            element.nextElementSibling.style.display = 'none';
+          }
+        } else {
+          element.textContent = daysSinceLastUpdate.toString();
+          if (element.nextElementSibling) {
+            element.nextElementSibling.style.display = '';
+          }
+        }
+      });
     }
-    window.__siteStatsRuntimeTimer = setInterval(updateRunningTime, 1000);
   }
 
-  startRuntimeTick();
+  // 页面加载时更新
+  updateDynamicStats();
 
-  // Swup 页面切换后，组件被重新渲染，需要重新启动计时器
+  // 页面切换时重新更新
   document.addEventListener("swup:contentReplaced", () => {
-    setTimeout(startRuntimeTick, 100);
-  });
-
-  // 页面隐藏时暂停计时器，显示时恢复，降低空耗
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      if (window.__siteStatsRuntimeTimer) {
-        clearInterval(window.__siteStatsRuntimeTimer);
-        window.__siteStatsRuntimeTimer = null;
-      }
-    } else {
-      startRuntimeTick();
-    }
+    setTimeout(updateDynamicStats, 100);
   });
 </script>

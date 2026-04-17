@@ -222,10 +222,6 @@ export const en: Translation = {
 	[Key.siteStatsLastUpdate]: "Last Activity",
 	[Key.siteStatsDaysAgo]: "{days} days ago",
 	[Key.siteStatsDays]: "{days} days",
-	[Key.siteStatsUnitDay]: "d",
-	[Key.siteStatsUnitHour]: "h",
-	[Key.siteStatsUnitMinute]: "m",
-	[Key.siteStatsUnitSecond]: "s",
 	[Key.today]: "Today",
 
 	// Calendar Component
