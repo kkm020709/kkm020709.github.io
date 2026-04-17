@@ -180,7 +180,7 @@ const { remarkPluginFrontmatter } = await render(entry);
         <RandomCoverImage
           src={processedImage}
           basePath={getFileDirFromPath(entry.filePath || '')}
-          alt="Cover Image of the Post"
+          alt={`${title} - Cover Image`}
           class="w-full h-full"
           seed={entry.id}
           preview={true}

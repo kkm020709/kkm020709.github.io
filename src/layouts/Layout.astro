@@ -141,6 +141,7 @@ const bannerOffset = `${BANNER_HEIGHT_EXTEND / 2}vh`;
       content={description || siteConfig.description || pageTitle}
     />
 
+    <link rel="canonical" href={Astro.url.href} />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     {
@@ -427,6 +428,7 @@ const bannerOffset = `${BANNER_HEIGHT_EXTEND / 2}vh`;
     ]}
   >
 
+    <a href="#swup-container" class="skip-to-content">跳转到主要内容</a>
     <!-- 页面顶部渐变高光效果 - 只在full和semifull模式下显示 -->
     {shouldShowTopHighlight && <div class="top-gradient-highlight" />}
     <ConfigCarrier />

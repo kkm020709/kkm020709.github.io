@@ -41,6 +41,9 @@
 	let selectedTag = "";
 	let keyword = "";
 	let failedCoverIds = new Set<string>();
+	let categoryDropdownOpen = false;
+	let dropdownRef: HTMLDivElement;
+
 	const params = new URLSearchParams(window.location.search);
 	tags = params.has("tag") ? params.getAll("tag") : tags;
 	categories = params.has("category") ? params.getAll("category") : categories;
@@ -89,6 +92,16 @@
 		});
 	}
 
+	function selectCategory(cat: string) {
+		selectedCategory = cat;
+		categoryDropdownOpen = false;
+		applyClientFilters();
+	}
+
+	function toggleCategoryDropdown() {
+		categoryDropdownOpen = !categoryDropdownOpen;
+	}
+
 	function selectTag(tag: string) {
 		selectedTag = selectedTag === tag ? "" : tag;
 		applyClientFilters();
@@ -99,7 +112,17 @@
 		failedCoverIds = new Set([...failedCoverIds, postId]);
 	}
 
+	function handleClickOutside(event: MouseEvent) {
+		if (dropdownRef && !dropdownRef.contains(event.target as Node)) {
+			categoryDropdownOpen = false;
+		}
+	}
+
+	$: categoryLabel = selectedCategory === "all" ? "全部分类" : selectedCategory;
+
 	onMount(() => {
+		document.addEventListener("click", handleClickOutside, true);
+
 		let localPosts = sortedPosts.slice();
 
 		if (tags.length > 0) {
@@ -148,6 +171,10 @@
 			.sort((a, b) => b[1] - a[1])
 			.map(([name]) => name);
 		applyClientFilters();
+
+		return () => {
+			document.removeEventListener("click", handleClickOutside, true);
+		};
 	});
 </script>
 
@@ -166,12 +193,37 @@
 				on:input={applyClientFilters}
 				aria-label="搜索文章"
 			/>
-			<select bind:value={selectedCategory} on:change={applyClientFilters} aria-label="按分类筛选">
-				<option value="all">全部分类</option>
-				{#each categoryOptions as category}
-					<option value={category}>{category}</option>
-				{/each}
-			</select>
+			<div class="category-dropdown" bind:this={dropdownRef}>
+				<button
+					class="category-trigger"
+					on:click={toggleCategoryDropdown}
+					aria-expanded={categoryDropdownOpen}
+					aria-haspopup="listbox"
+				>
+					<span class="category-trigger-text">{categoryLabel}</span>
+					<svg class="category-chevron" class:open={categoryDropdownOpen} viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+						<path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+					</svg>
+				</button>
+				{#if categoryDropdownOpen}
+					<div class="category-panel" role="listbox">
+						<button
+							class="category-option {selectedCategory === 'all' ? 'active' : ''}"
+							on:click={() => selectCategory('all')}
+							role="option"
+							aria-selected={selectedCategory === 'all'}
+						>全部分类</button>
+						{#each categoryOptions as cat}
+							<button
+								class="category-option {selectedCategory === cat ? 'active' : ''}"
+								on:click={() => selectCategory(cat)}
+								role="option"
+								aria-selected={selectedCategory === cat}
+							>{cat}</button>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		</div>
 
 		{#if tagOptions.length > 0}
@@ -258,8 +310,7 @@
 		}
 	}
 
-	.archive-filter-bar input,
-	.archive-filter-bar select {
+	.archive-filter-bar input {
 		height: 2.5rem;
 		border-radius: 0.75rem;
 		border: 1px solid var(--line-divider);
@@ -269,9 +320,103 @@
 		font-size: 0.9rem;
 	}
 
-	.archive-filter-bar input:focus,
-	.archive-filter-bar select:focus {
+	.archive-filter-bar input:focus {
 		border-color: var(--primary);
+	}
+
+	/* Custom category dropdown */
+	.category-dropdown {
+		position: relative;
+	}
+
+	.category-trigger {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		height: 2.5rem;
+		border-radius: 0.75rem;
+		border: 1px solid var(--line-divider);
+		background: var(--btn-regular-bg);
+		padding: 0 0.85rem;
+		font-size: 0.9rem;
+		color: var(--btn-content);
+		cursor: pointer;
+		transition: border-color 0.15s ease;
+		text-align: left;
+	}
+
+	.category-trigger:hover {
+		border-color: var(--primary);
+	}
+
+	.category-trigger-text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		flex: 1;
+	}
+
+	.category-chevron {
+		flex-shrink: 0;
+		margin-left: 0.4rem;
+		opacity: 0.55;
+		transition: transform 0.2s ease;
+	}
+
+	.category-chevron.open {
+		transform: rotate(180deg);
+	}
+
+	.category-panel {
+		position: absolute;
+		top: calc(100% + 0.35rem);
+		left: 0;
+		right: 0;
+		z-index: 50;
+		background: var(--card-bg);
+		border: 1px solid var(--line-divider);
+		border-radius: var(--radius-large);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+		padding: 0.35rem;
+		max-height: 16rem;
+		overflow-y: auto;
+		animation: dropdownFadeIn 0.15s ease;
+	}
+
+	@keyframes dropdownFadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.category-option {
+		display: block;
+		width: 100%;
+		text-align: left;
+		padding: 0.5rem 0.75rem;
+		border: none;
+		background: none;
+		font-size: 0.88rem;
+		color: var(--btn-content);
+		border-radius: calc(var(--radius-large) - 2px);
+		cursor: pointer;
+		transition: background 0.12s ease, color 0.12s ease;
+	}
+
+	.category-option:hover {
+		background: var(--btn-plain-bg-hover);
+	}
+
+	.category-option.active {
+		color: var(--primary);
+		font-weight: 600;
+		background: var(--btn-plain-bg-hover);
 	}
 
 	.archive-tag-bar {
